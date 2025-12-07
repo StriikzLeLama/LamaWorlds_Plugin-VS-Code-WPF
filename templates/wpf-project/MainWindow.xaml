@@ -1,0 +1,65 @@
+<Window x:Class="LamaWorldsApp.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:LamaWorldsApp"
+        xmlns:vm="clr-namespace:LamaWorldsApp.ViewModels"
+        mc:Ignorable="d"
+        Title="Lama Worlds" Height="600" Width="900"
+        Background="{StaticResource GlassBackgroundBrush}"
+        WindowStartupLocation="CenterScreen">
+    
+    <Window.DataContext>
+        <vm:MainViewModel/>
+    </Window.DataContext>
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="250"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <!-- Sidebar -->
+        <Border Grid.Column="0" Background="#11111f" BorderBrush="#3a3a5e" BorderThickness="0,0,1,0">
+            <StackPanel Margin="20">
+                <TextBlock Text="LAMA" Foreground="{StaticResource NeonBlueBrush}" FontSize="32" FontWeight="Bold"/>
+                <TextBlock Text="WORLDS" Foreground="White" FontSize="32" FontWeight="Light" Margin="0,-10,0,30"/>
+
+                <Button Content="Dashboard" Style="{StaticResource NeonButton}" Margin="0,10"/>
+                <Button Content="Settings" Style="{StaticResource NeonButton}" Margin="0,10" Background="Transparent" BorderBrush="#333333"/>
+            </StackPanel>
+        </Border>
+
+        <!-- Main Content -->
+        <Grid Grid.Column="1" Margin="30">
+            <StackPanel>
+                <TextBlock Text="Welcome Back" Style="{StaticResource Header1}"/>
+                
+                <Border Style="{StaticResource GlassCard}" Margin="0,20,0,0">
+                    <StackPanel>
+                        <TextBlock Text="Project Status" Foreground="{StaticResource NeonBlueBrush}" FontWeight="Bold" Margin="0,0,0,10"/>
+                        <TextBlock Text="{Binding StatusMessage}" Foreground="White" FontSize="16"/>
+                        <Button Command="{Binding UpdateStatusCommand}" Content="Update Status"  Style="{StaticResource NeonButton}" HorizontalAlignment="Left" Margin="0,20,0,0"/>
+                    </StackPanel>
+                </Border>
+                
+                <Grid Margin="0,20,0,0">
+                    <Grid.ColumnDefinitions>
+                         <ColumnDefinition Width="*"/>
+                         <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    
+                    <Border Grid.Column="0" Style="{StaticResource GlassCard}" Margin="0,0,10,0">
+                         <TextBlock Text="Analytics" Foreground="White"/>
+                    </Border>
+                     <Border Grid.Column="1" Style="{StaticResource GlassCard}" Margin="10,0,0,0">
+                         <TextBlock Text="Reports" Foreground="White"/>
+                    </Border>
+                </Grid>
+
+            </StackPanel>
+        </Grid>
+
+    </Grid>
+</Window>

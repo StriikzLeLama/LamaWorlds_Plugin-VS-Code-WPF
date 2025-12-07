@@ -1,0 +1,333 @@
+{
+    "name": "lamaworlds-wpf-studio-pro",
+    "displayName": "LamaWorlds WPF Studio Pro",
+    "description": "Advanced WPF development extension with Visual Studio-level features: XAML Designer, Live Preview, MVVM Tools, Debug Inspector, and more.",
+    "version": "1.0.0",
+    "publisher": "lamaworlds",
+    "engines": {
+        "vscode": "^1.80.0"
+    },
+    "categories": [
+        "Other",
+        "Visualization",
+        "Debuggers"
+    ],
+    "activationEvents": [
+        "onStartupFinished"
+    ],
+    "main": "./out/extension.js",
+    "contributes": {
+        "commands": [
+            {
+                "command": "lamaworlds.createWpfProject",
+                "title": "Lama Worlds: Create WPF Project",
+                "category": "Lama Worlds"
+            },
+            {
+                "command": "lamaworlds.newWindow",
+                "title": "Lama Worlds: New Window (MVVM)",
+                "category": "Lama Worlds"
+            },
+            {
+                "command": "lamaworlds.newUserControl",
+                "title": "Lama Worlds: New UserControl",
+                "category": "Lama Worlds"
+            },
+            {
+                "command": "lamaworlds.newViewModel",
+                "title": "Lama Worlds: New ViewModel",
+                "category": "Lama Worlds"
+            },
+            {
+                "command": "lamaworlds.addRelayCommand",
+                "title": "Lama Worlds: Add RelayCommand",
+                "category": "Lama Worlds"
+            },
+            {
+                "command": "lamaworlds.generateDataTemplate",
+                "title": "Lama Worlds: Generate DataTemplate",
+                "category": "Lama Worlds"
+            },
+            {
+                "command": "lamaworlds.openXamlPreview",
+                "title": "Lama Worlds: Open XAML Preview",
+                "icon": "$(preview)",
+                "category": "Lama Worlds"
+            },
+            {
+                "command": "lamaworlds.openToolbox",
+                "title": "Lama Worlds: Open Toolbox",
+                "icon": "$(tools)",
+                "category": "Lama Worlds"
+            },
+            {
+                "command": "lamaworlds.openResourceExplorer",
+                "title": "Lama Worlds: Open Resource Explorer",
+                "icon": "$(symbol-color)",
+                "category": "Lama Worlds"
+            },
+            {
+                "command": "lamaworlds.openDebugInspector",
+                "title": "Lama Worlds: Open Debug Inspector",
+                "icon": "$(debug)",
+                "category": "Lama Worlds"
+            },
+            {
+                "command": "lamaworlds.openRunPanel",
+                "title": "Lama Worlds: Open Run & Build Panel",
+                "icon": "$(play)",
+                "category": "Lama Worlds"
+            },
+            {
+                "command": "lamaworlds.extractToUserControl",
+                "title": "Lama Worlds: Extract to UserControl",
+                "category": "Lama Worlds"
+            },
+            {
+                "command": "lamaworlds.wrapWithGrid",
+                "title": "Lama Worlds: Wrap with Grid",
+                "category": "Lama Worlds"
+            },
+            {
+                "command": "lamaworlds.wrapWithBorder",
+                "title": "Lama Worlds: Wrap with Border",
+                "category": "Lama Worlds"
+            },
+            {
+                "command": "lamaworlds.wrapWithStackPanel",
+                "title": "Lama Worlds: Wrap with StackPanel",
+                "category": "Lama Worlds"
+            },
+            {
+                "command": "lamaworlds.convertGridToStackPanel",
+                "title": "Lama Worlds: Convert Grid to StackPanel",
+                "category": "Lama Worlds"
+            },
+            {
+                "command": "lamaworlds.renameBinding",
+                "title": "Lama Worlds: Rename Binding",
+                "category": "Lama Worlds"
+            },
+            {
+                "command": "lamaworlds.generateStyle",
+                "title": "Lama Worlds: Generate Style from Element",
+                "category": "Lama Worlds"
+            },
+            {
+                "command": "lamaworlds.toggleHotReload",
+                "title": "Lama Worlds: Toggle Hot Reload",
+                "category": "Lama Worlds"
+            },
+            {
+                "command": "lamaworlds.buildProject",
+                "title": "Lama Worlds: Build Project",
+                "category": "Lama Worlds"
+            },
+            {
+                "command": "lamaworlds.runProject",
+                "title": "Lama Worlds: Run Project",
+                "category": "Lama Worlds"
+            },
+            {
+                "command": "lamaworlds.insertToolboxControl",
+                "title": "Lama Worlds: Insert Control",
+                "category": "Lama Worlds"
+            },
+            {
+                "command": "lamaworlds.openAnimationEditor",
+                "title": "Lama Worlds: Open Animation Editor",
+                "icon": "$(symbol-event)",
+                "category": "Lama Worlds"
+            },
+            {
+                "command": "lamaworlds.openResponsiveDesign",
+                "title": "Lama Worlds: Open Responsive Design",
+                "icon": "$(device-mobile)",
+                "category": "Lama Worlds"
+            },
+            {
+                "command": "lamaworlds.openMarketplace",
+                "title": "Lama Worlds: Open Component Marketplace",
+                "icon": "$(package)",
+                "category": "Lama Worlds"
+            },
+            {
+                "command": "lamaworlds.aiGenerateUI",
+                "title": "Lama Worlds: AI Generate UI",
+                "icon": "$(sparkle)",
+                "category": "Lama Worlds"
+            },
+            {
+                "command": "lamaworlds.aiOptimizeLayout",
+                "title": "Lama Worlds: AI Optimize Layout",
+                "icon": "$(lightbulb)",
+                "category": "Lama Worlds"
+            },
+            {
+                "command": "lamaworlds.aiAutoFix",
+                "title": "Lama Worlds: AI Auto-Fix XAML",
+                "icon": "$(tools)",
+                "category": "Lama Worlds"
+            },
+            {
+                "command": "lamaworlds.aiGenerateViewModel",
+                "title": "Lama Worlds: AI Generate ViewModel from XAML",
+                "icon": "$(symbol-class)",
+                "category": "Lama Worlds"
+            }
+        ],
+        "views": {
+            "explorer": [
+                {
+                    "id": "lamaworldsToolbox",
+                    "name": "WPF Toolbox",
+                    "when": "resourceExtname == .xaml"
+                },
+                {
+                    "id": "lamaworldsResourceExplorer",
+                    "name": "Resource Explorer",
+                    "when": "resourceExtname == .xaml || resourceExtname == .csproj"
+                }
+            ]
+        },
+        "viewsContainers": {
+            "activitybar": [
+                {
+                    "id": "lamaworlds",
+                    "title": "Lama Worlds WPF",
+                    "icon": "$(code)"
+                }
+            ]
+        },
+        "views": {
+            "lamaworlds": [
+                {
+                    "id": "lamaworldsToolbox",
+                    "name": "Toolbox",
+                    "when": "true"
+                },
+                {
+                    "id": "lamaworldsResourceExplorer",
+                    "name": "Resource Explorer",
+                    "when": "true"
+                },
+                {
+                    "id": "lamaworldsDebugInspector",
+                    "name": "Debug Inspector",
+                    "when": "true"
+                },
+                {
+                    "id": "lamaworldsAnimationEditor",
+                    "name": "Animation Editor",
+                    "when": "true"
+                },
+                {
+                    "id": "lamaworldsResponsiveDesign",
+                    "name": "Responsive Design",
+                    "when": "true"
+                },
+                {
+                    "id": "lamaworldsMarketplace",
+                    "name": "Component Marketplace",
+                    "when": "true"
+                }
+            ]
+        },
+        "menus": {
+            "view/title": [
+                {
+                    "command": "lamaworlds.openXamlPreview",
+                    "when": "view == lamaworldsToolbox",
+                    "group": "navigation"
+                }
+            ],
+            "editor/context": [
+                {
+                    "command": "lamaworlds.extractToUserControl",
+                    "when": "editorLangId == xml && resourceExtname == .xaml",
+                    "group": "lamaworlds"
+                },
+                {
+                    "command": "lamaworlds.wrapWithGrid",
+                    "when": "editorLangId == xml && resourceExtname == .xaml",
+                    "group": "lamaworlds"
+                },
+                {
+                    "command": "lamaworlds.wrapWithBorder",
+                    "when": "editorLangId == xml && resourceExtname == .xaml",
+                    "group": "lamaworlds"
+                },
+                {
+                    "command": "lamaworlds.wrapWithStackPanel",
+                    "when": "editorLangId == xml && resourceExtname == .xaml",
+                    "group": "lamaworlds"
+                },
+                {
+                    "command": "lamaworlds.generateStyle",
+                    "when": "editorLangId == xml && resourceExtname == .xaml",
+                    "group": "lamaworlds"
+                },
+                {
+                    "command": "lamaworlds.aiOptimizeLayout",
+                    "when": "editorLangId == xml && resourceExtname == .xaml",
+                    "group": "lamaworlds@1"
+                },
+                {
+                    "command": "lamaworlds.aiAutoFix",
+                    "when": "editorLangId == xml && resourceExtname == .xaml",
+                    "group": "lamaworlds@1"
+                },
+                {
+                    "command": "lamaworlds.aiGenerateViewModel",
+                    "when": "editorLangId == xml && resourceExtname == .xaml",
+                    "group": "lamaworlds@1"
+                }
+            ]
+        },
+        "snippets": [
+            {
+                "language": "xml",
+                "path": "./snippets/xaml.json"
+            },
+            {
+                "language": "csharp",
+                "path": "./snippets/csharp.json"
+            }
+        ],
+        "keybindings": [
+            {
+                "command": "lamaworlds.openXamlPreview",
+                "key": "ctrl+shift+p",
+                "when": "editorLangId == xml && resourceExtname == .xaml"
+            }
+        ],
+        "configuration": {
+            "lamaworlds.wpf.previewAutoRefresh": {
+                "type": "boolean",
+                "default": true,
+                "description": "Automatically refresh XAML preview on file save"
+            },
+            "lamaworlds.wpf.hotReloadEnabled": {
+                "type": "boolean",
+                "default": true,
+                "description": "Enable hot reload for WPF applications"
+            },
+            "lamaworlds.wpf.previewPort": {
+                "type": "number",
+                "default": 8080,
+                "description": "Port for XAML preview server"
+            }
+        }
+    },
+    "scripts": {
+        "vscode:prepublish": "npm run compile",
+        "compile": "tsc -p ./",
+        "watch": "tsc -watch -p ./",
+        "package": "vsce package"
+    },
+    "devDependencies": {
+        "@types/vscode": "^1.80.0",
+        "@types/node": "18.x",
+        "typescript": "^5.1.3"
+    },
+}

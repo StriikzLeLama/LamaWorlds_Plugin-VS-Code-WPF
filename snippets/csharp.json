@@ -1,0 +1,101 @@
+{
+    "ViewModel": {
+        "prefix": "viewmodel",
+        "body": [
+            "using System.ComponentModel;",
+            "using System.Runtime.CompilerServices;",
+            "",
+            "namespace ${1:Namespace}.ViewModels;",
+            "",
+            "public class ${2:ViewModelName} : INotifyPropertyChanged",
+            "{",
+            "    public event PropertyChangedEventHandler? PropertyChanged;",
+            "",
+            "    protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)",
+            "    {",
+            "        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));",
+            "    }",
+            "    $0",
+            "}"
+        ],
+        "description": "ViewModel with INotifyPropertyChanged"
+    },
+    "ViewModel Property": {
+        "prefix": "propvm",
+        "body": [
+            "private ${1:string} _${2:myProperty};",
+            "",
+            "public ${1:string} ${3:MyProperty}",
+            "{",
+            "    get => _${2:myProperty};",
+            "    set",
+            "    {",
+            "        if (_${2:myProperty} != value)",
+            "        {",
+            "            _${2:myProperty} = value;",
+            "            OnPropertyChanged();",
+            "        }",
+            "    }",
+            "}"
+        ],
+        "description": "Property with INotifyPropertyChanged"
+    },
+    "Relay Command": {
+        "prefix": "cmd",
+        "body": [
+            "public ICommand ${1:MyCommand} { get; }",
+            "",
+            "private void Execute${1:MyCommand}(object? parameter)",
+            "{",
+            "    $0",
+            "}"
+        ],
+        "description": "RelayCommand boilerplate"
+    },
+    "RelayCommand with CanExecute": {
+        "prefix": "cmdcan",
+        "body": [
+            "public ICommand ${1:MyCommand} { get; }",
+            "",
+            "private bool CanExecute${1:MyCommand}(object? parameter)",
+            "{",
+            "    return ${2:true};",
+            "}",
+            "",
+            "private void Execute${1:MyCommand}(object? parameter)",
+            "{",
+            "    $0",
+            "}"
+        ],
+        "description": "RelayCommand with CanExecute"
+    },
+    "Service": {
+        "prefix": "service",
+        "body": [
+            "namespace ${1:Namespace}.Services;",
+            "",
+            "public interface I${2:ServiceName}",
+            "{",
+            "    $0",
+            "}",
+            "",
+            "public class ${2:ServiceName} : I${2:ServiceName}",
+            "{",
+            "    ",
+            "}"
+        ],
+        "description": "Service interface and implementation"
+    },
+    "INotifyPropertyChanged": {
+        "prefix": "inpc",
+        "body": [
+            "public event PropertyChangedEventHandler? PropertyChanged;",
+            "",
+            "protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)",
+            "{",
+            "    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));",
+            "}"
+        ],
+        "description": "INotifyPropertyChanged implementation"
+    }
+}

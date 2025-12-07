@@ -1,0 +1,148 @@
+{
+    "Window": {
+        "prefix": "window",
+        "body": [
+            "<Window x:Class=\"${1:Namespace}.${2:WindowName}\"",
+            "        xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\"",
+            "        xmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\"",
+            "        Title=\"${3:Title}\" Height=\"450\" Width=\"800\">",
+            "    <Grid>",
+            "        $0",
+            "    </Grid>",
+            "</Window>"
+        ],
+        "description": "WPF Window template"
+    },
+    "UserControl": {
+        "prefix": "usercontrol",
+        "body": [
+            "<UserControl x:Class=\"${1:Namespace}.${2:ControlName}\"",
+            "             xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\"",
+            "             xmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\">",
+            "    <Grid>",
+            "        $0",
+            "    </Grid>",
+            "</UserControl>"
+        ],
+        "description": "WPF UserControl template"
+    },
+    "Page": {
+        "prefix": "page",
+        "body": [
+            "<Page x:Class=\"${1:Namespace}.${2:PageName}\"",
+            "      xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\"",
+            "      xmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\"",
+            "      Title=\"${3:Title}\">",
+            "    <Grid>",
+            "        $0",
+            "    </Grid>",
+            "</Page>"
+        ],
+        "description": "WPF Page template"
+    },
+    "Grid": {
+        "prefix": "grid",
+        "body": [
+            "<Grid>",
+            "    $0",
+            "</Grid>"
+        ],
+        "description": "Grid layout container"
+    },
+    "Grid with Rows and Columns": {
+        "prefix": "gridrc",
+        "body": [
+            "<Grid>",
+            "    <Grid.RowDefinitions>",
+            "        <RowDefinition Height=\"*\"/>",
+            "        <RowDefinition Height=\"*\"/>",
+            "    </Grid.RowDefinitions>",
+            "    <Grid.ColumnDefinitions>",
+            "        <ColumnDefinition Width=\"*\"/>",
+            "        <ColumnDefinition Width=\"*\"/>",
+            "    </Grid.ColumnDefinitions>",
+            "    $0",
+            "</Grid>"
+        ],
+        "description": "Grid with row and column definitions"
+    },
+    "StackPanel": {
+        "prefix": "stackpanel",
+        "body": [
+            "<StackPanel>",
+            "    $0",
+            "</StackPanel>"
+        ],
+        "description": "StackPanel layout container"
+    },
+    "Neon Grid": {
+        "prefix": "neongrid",
+        "body": [
+            "<Grid>",
+            "    <Grid.Background>",
+            "        <SolidColorBrush Color=\"{StaticResource GlassBackgroundColor}\"/>",
+            "    </Grid.Background>",
+            "    $0",
+            "</Grid>"
+        ],
+        "description": "Grid with Neon Background"
+    },
+    "Glass Card": {
+        "prefix": "glasscard",
+        "body": [
+            "<Border Style=\"{StaticResource GlassCard}\" Margin=\"10\">",
+            "    <StackPanel>",
+            "        <TextBlock Text=\"${1:Title}\" Style=\"{StaticResource Header1}\"/>",
+            "        <TextBlock Text=\"${2:Content}\" Foreground=\"{StaticResource TextSecondaryBrush}\"/>",
+            "    </StackPanel>",
+            "</Border>"
+        ],
+        "description": "Glassmorphism Card Component"
+    },
+    "Neon Button": {
+        "prefix": "neonbtn",
+        "body": [
+            "<Button Content=\"${1:Click Me}\" Style=\"{StaticResource NeonButton}\" Command=\"{Binding ${2:CommandName}}\" />"
+        ],
+        "description": "Neon Styled Button"
+    },
+    "HoloPanel": {
+        "prefix": "holopanel",
+        "body": [
+            "<Border Background=\"{StaticResource HoloBackgroundBrush}\" CornerRadius=\"10\" Padding=\"15\">",
+            "    $0",
+            "</Border>"
+        ],
+        "description": "Holographic panel component"
+    },
+    "Glass Panel": {
+        "prefix": "glasspanel",
+        "body": [
+            "<Border Background=\"{StaticResource GlassSurfaceBrush}\" CornerRadius=\"10\" Padding=\"15\">",
+            "    $0",
+            "</Border>"
+        ],
+        "description": "Semi-transparent glass panel"
+    },
+    "DataTemplate": {
+        "prefix": "datatemplate",
+        "body": [
+            "<DataTemplate DataType=\"{x:Type local:${1:ViewModelType}}\">",
+            "    <Grid>",
+            "        $0",
+            "    </Grid>",
+            "</DataTemplate>"
+        ],
+        "description": "DataTemplate for ViewModel"
+    },
+    "Style": {
+        "prefix": "style",
+        "body": [
+            "<Style x:Key=\"${1:StyleName}\" TargetType=\"${2:ControlType}\">",
+            "    <Setter Property=\"${3:Property}\" Value=\"${4:Value}\"/>",
+            "    $0",
+            "</Style>"
+        ],
+        "description": "WPF Style definition"
+    }
+}
