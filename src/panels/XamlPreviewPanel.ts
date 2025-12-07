@@ -37,15 +37,11 @@ export class XamlPreviewPanel {
         this._dragController = new DragController(this._treeParser);
         this._resizeController = new ResizeController(this._treeParser);
 
-        // Initialize preview engine
-        this._previewEngine.initialize(context).then(() => {
-            this._update();
-        }).catch((error) => {
-            this._panel.webview.html = this._getErrorHtml(`Failed to initialize preview engine: ${error.message}`);
-        });
-
         // Set the webview's initial html content
         this._panel.webview.html = this._getLoadingHtml();
+
+        // Initialize preview engine asynchronously (non-blocking)
+        this._initializePreviewEngine(context);
 
         // Listen for when the panel is disposed
         this._panel.onDidDispose(() => this.dispose(), null, this._disposables);
@@ -101,7 +97,7 @@ export class XamlPreviewPanel {
                     vscode.Uri.joinPath(extensionUri, 'webviews'),
                     vscode.Uri.joinPath(extensionUri, 'out')
                 ],
-                retainContextWhenHidden: true
+                retainContextWhenHidden: false // Allow navigation to other tabs
             }
         );
 
@@ -134,6 +130,63 @@ export class XamlPreviewPanel {
             if (x) {
                 x.dispose();
             }
+        }
+    }
+
+    /**
+     * Initialize preview engine asynchronously with timeout and fallback
+     */
+    private async _initializePreviewEngine(context: vscode.ExtensionContext): Promise<void> {
+        const initTimeout = setTimeout(() => {
+            this._panel.webview.html = this._getErrorHtml(
+                'Preview engine initialization is taking longer than expected. ' +
+                'The renderer may need to be built. Please check the Output panel for details.'
+            );
+        }, 10000); // 10 second timeout
+
+        try {
+            await Promise.race([
+                this._previewEngine.initialize(context),
+                new Promise((_, reject) => 
+                    setTimeout(() => reject(new Error('Initialization timeout')), 30000)
+                )
+            ]);
+            
+            clearTimeout(initTimeout);
+            
+            // Update preview after successful initialization
+            await this._update();
+        } catch (error: any) {
+            clearTimeout(initTimeout);
+            console.error('Preview engine initialization error:', error);
+            
+            // Show helpful error message
+            const errorMessage = error.message || 'Unknown error';
+            const isTimeout = errorMessage.includes('timeout');
+            const isBuildError = errorMessage.includes('build') || errorMessage.includes('dotnet');
+            
+            let userMessage = 'Failed to initialize preview engine.';
+            if (isTimeout) {
+                userMessage += ' The renderer build is taking too long. Please ensure .NET 8 SDK is installed.';
+            } else if (isBuildError) {
+                userMessage += ' Failed to build renderer. Please check that .NET 8 SDK is installed and try again.';
+            } else {
+                userMessage += ` ${errorMessage}`;
+            }
+            
+            this._panel.webview.html = this._getErrorHtml(userMessage);
+            
+            // Show notification to user
+            vscode.window.showWarningMessage(
+                'WPF Preview: Renderer initialization failed. Preview will work in fallback mode.',
+                'Retry', 'Open Output'
+            ).then(selection => {
+                if (selection === 'Retry') {
+                    this._initializePreviewEngine(context);
+                } else if (selection === 'Open Output') {
+                    vscode.commands.executeCommand('workbench.action.output.toggleOutput');
+                }
+            });
         }
     }
 

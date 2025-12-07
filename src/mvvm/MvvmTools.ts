@@ -195,16 +195,16 @@ export class MvvmTools {
     </DataTemplate>`;
 
         const filePath = path.join(resourcesPath, 'DataTemplates.xaml');
-        let content = '';
+        let fileContent = '';
         if (fs.existsSync(filePath)) {
-            content = fs.readFileSync(filePath, 'utf8');
-            content = content.replace('</ResourceDictionary>', `${dataTemplateXaml}\n</ResourceDictionary>`);
+            fileContent = fs.readFileSync(filePath, 'utf8');
+            fileContent = fileContent.replace('</ResourceDictionary>', `${dataTemplateXaml}\n</ResourceDictionary>`);
         } else {
             const namespace = PathHelper.getNamespace(
                 PathHelper.findCsproj() || path.join(workspaceRoot, 'App.csproj'),
                 resourcesPath
             );
-            content = `<?xml version="1.0" encoding="utf-8"?>
+            fileContent = `<?xml version="1.0" encoding="utf-8"?>
 <ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:local="clr-namespace:${namespace}.ViewModels">

@@ -40,9 +40,23 @@ export class PreviewEngine {
         const rendererProjectPath = path.join(extensionPath, 'preview-engine', 'renderer');
         const rendererExePath = path.join(rendererProjectPath, 'bin', 'Debug', 'net8.0-windows', 'renderer.exe');
 
-        // Check if renderer exists, if not, build it
+        // Check if renderer exists, if not, build it (with timeout)
         if (!fs.existsSync(rendererExePath)) {
-            await this.buildRenderer(rendererProjectPath);
+            try {
+                await Promise.race([
+                    this.buildRenderer(rendererProjectPath),
+                    new Promise((_, reject) => 
+                        setTimeout(() => reject(new Error('Build timeout after 60 seconds')), 60000)
+                    )
+                ]);
+            } catch (error: any) {
+                // If build fails, we'll use a fallback mode
+                console.warn('Renderer build failed or timed out:', error.message);
+                // Don't throw - allow fallback mode
+                if (!fs.existsSync(rendererExePath)) {
+                    throw new Error(`Renderer not found and build failed: ${error.message}`);
+                }
+            }
         }
 
         this._rendererPath = rendererExePath;

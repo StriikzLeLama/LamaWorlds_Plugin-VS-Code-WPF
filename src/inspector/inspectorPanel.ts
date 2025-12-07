@@ -199,7 +199,7 @@ export class InspectorPanel {
     }
 
     private _update() {
-        const treeStructure = this._treeParser?.getTreeStructure();
+        const treeStructure = this._treeParser?.getTreeStructure() || null;
         
         this._panel.webview.html = this._getWebviewContent(treeStructure);
     }

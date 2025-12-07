@@ -99,8 +99,9 @@ export class ResourceExplorerPanel {
         try {
             const files = fs.readdirSync(dir, { recursive: true });
             for (const file of files) {
-                const fullPath = path.join(dir, file);
-                if (file.endsWith('.xaml') || file.endsWith('.resx')) {
+                const fileName = typeof file === 'string' ? file : file.toString();
+                const fullPath = path.join(dir, fileName);
+                if (fileName.endsWith('.xaml') || fileName.endsWith('.resx')) {
                     await this._parseResourceFile(fullPath);
                 }
             }
@@ -353,8 +354,9 @@ export class ResourceExplorerPanel {
         try {
             const files = fs.readdirSync(root, { recursive: true });
             for (const file of files) {
-                if (file === fileName || file.endsWith(fileName)) {
-                    return path.join(root, file);
+                const fileStr = typeof file === 'string' ? file : file.toString();
+                if (fileStr === fileName || fileStr.endsWith(fileName)) {
+                    return path.join(root, fileStr);
                 }
             }
         } catch (error) {

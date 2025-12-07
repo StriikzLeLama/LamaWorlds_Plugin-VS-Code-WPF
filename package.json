@@ -192,6 +192,12 @@
                 "title": "Lama Worlds: Open Visual States Editor",
                 "icon": "$(symbol-state)",
                 "category": "Lama Worlds"
+            },
+            {
+                "command": "lamaworlds.openCommandPalette",
+                "title": "Lama Worlds: Open Command Palette",
+                "icon": "$(list-flat)",
+                "category": "Lama Worlds"
             }
         ],
         "views": {
@@ -248,11 +254,22 @@
                     "id": "lamaworldsMarketplace",
                     "name": "Component Marketplace",
                     "when": "true"
+                },
+                {
+                    "id": "lamaworldsCommands",
+                    "name": "Commands",
+                    "when": "true"
                 }
             ]
         },
         "menus": {
             "view/title": [
+                {
+                    "command": "lamaworlds.openCommandPalette",
+                    "when": "view == lamaworldsCommands",
+                    "group": "navigation",
+                    "icon": "$(list-flat)"
+                },
                 {
                     "command": "lamaworlds.openXamlPreview",
                     "when": "view == lamaworldsToolbox",

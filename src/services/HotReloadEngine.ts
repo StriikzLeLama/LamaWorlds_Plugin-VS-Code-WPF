@@ -127,9 +127,13 @@ export class HotReloadEngine {
             // Search recursively
             try {
                 const allFiles = fs.readdirSync(folder.uri.fsPath, { recursive: true });
-                const csprojFile = allFiles.find((f: string) => f.endsWith('.csproj'));
+                const csprojFile = allFiles.find((f: string | Buffer) => {
+                    const fStr = typeof f === 'string' ? f : f.toString();
+                    return fStr.endsWith('.csproj');
+                });
                 if (csprojFile) {
-                    this._projectPath = path.join(folder.uri.fsPath, csprojFile);
+                    const csprojPath = typeof csprojFile === 'string' ? csprojFile : csprojFile.toString();
+                    this._projectPath = path.join(folder.uri.fsPath, csprojPath);
                     break;
                 }
             } catch (error) {

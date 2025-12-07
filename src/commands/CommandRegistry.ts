@@ -86,16 +86,79 @@ export class CommandRegistry {
         // AI commands
         disposables.push(
             vscode.commands.registerCommand('lamaworlds.aiGenerateUI', async () => {
-                await this.aiFeatures.generateUI();
+                const description = await vscode.window.showInputBox({
+                    prompt: 'Describe the UI you want to generate',
+                    placeHolder: 'e.g., A login form with username, password, and submit button'
+                });
+                if (description) {
+                    const result = await this.aiFeatures.generateUIFromDescription(description);
+                    const editor = vscode.window.activeTextEditor;
+                    if (editor && editor.document.fileName.endsWith('.xaml')) {
+                        await editor.edit(editBuilder => {
+                            editBuilder.insert(new vscode.Position(0, 0), result.xaml);
+                        });
+                    }
+                }
             }),
             vscode.commands.registerCommand('lamaworlds.aiOptimizeLayout', async () => {
-                await this.aiFeatures.optimizeLayout();
+                const editor = vscode.window.activeTextEditor;
+                if (editor && editor.document.fileName.endsWith('.xaml')) {
+                    const xamlContent = editor.document.getText();
+                    const result = await this.aiFeatures.optimizeLayout(xamlContent);
+                    if (result.suggestions.length > 0) {
+                        const apply = await vscode.window.showInformationMessage(
+                            `Found ${result.suggestions.length} optimization suggestions. Apply them?`,
+                            'Apply', 'Cancel'
+                        );
+                        if (apply === 'Apply') {
+                            await editor.edit(editBuilder => {
+                                const fullRange = new vscode.Range(
+                                    editor.document.positionAt(0),
+                                    editor.document.positionAt(editor.document.getText().length)
+                                );
+                                editBuilder.replace(fullRange, result.optimized);
+                            });
+                        }
+                    }
+                }
             }),
             vscode.commands.registerCommand('lamaworlds.aiAutoFix', async () => {
-                await this.aiFeatures.autoFix();
+                const editor = vscode.window.activeTextEditor;
+                if (editor && editor.document.fileName.endsWith('.xaml')) {
+                    const xamlContent = editor.document.getText();
+                    const result = await this.aiFeatures.autoFixXaml(xamlContent);
+                    if (result.fixes.length > 0) {
+                        const apply = await vscode.window.showInformationMessage(
+                            `Found ${result.fixes.length} fixes. Apply them?`,
+                            'Apply', 'Cancel'
+                        );
+                        if (apply === 'Apply') {
+                            await editor.edit(editBuilder => {
+                                const fullRange = new vscode.Range(
+                                    editor.document.positionAt(0),
+                                    editor.document.positionAt(editor.document.getText().length)
+                                );
+                                editBuilder.replace(fullRange, result.fixed);
+                            });
+                        }
+                    }
+                }
             }),
             vscode.commands.registerCommand('lamaworlds.aiGenerateViewModel', async () => {
-                await this.aiFeatures.generateViewModel();
+                const description = await vscode.window.showInputBox({
+                    prompt: 'Describe the ViewModel properties and commands needed',
+                    placeHolder: 'e.g., Properties: Name, Age. Commands: SaveCommand, DeleteCommand'
+                });
+                if (description) {
+                    const result = await this.aiFeatures.generateViewModelFromDescription(description);
+                    // Create new ViewModel file
+                    const workspaceFolder = vscode.workspace.workspaceFolders?.[0];
+                    if (workspaceFolder) {
+                        const filePath = vscode.Uri.joinPath(workspaceFolder.uri, 'ViewModels', 'GeneratedViewModel.cs');
+                        await vscode.workspace.fs.writeFile(filePath, Buffer.from(result, 'utf8'));
+                        vscode.window.showInformationMessage('ViewModel generated successfully!');
+                    }
+                }
             })
         );
 

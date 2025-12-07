@@ -152,6 +152,39 @@ export class AIFeatures {
         return this._generateViewModel(properties, commands);
     }
 
+    /**
+     * ViewModel Generator: Generate from description
+     */
+    async generateViewModelFromDescription(description: string): Promise<string> {
+        const properties: string[] = [];
+        const commands: string[] = [];
+
+        // Extract properties from description
+        const propMatch = description.match(/properties?:\s*([^,]+(?:,\s*[^,]+)*)/i);
+        if (propMatch) {
+            const props = propMatch[1].split(',').map(p => p.trim());
+            properties.push(...props);
+        }
+
+        // Extract commands from description
+        const cmdMatch = description.match(/commands?:\s*([^,]+(?:,\s*[^,]+)*)/i);
+        if (cmdMatch) {
+            const cmds = cmdMatch[1].split(',').map(c => c.trim().replace(/Command$/, ''));
+            commands.push(...cmds);
+        }
+
+        // If no explicit properties/commands, infer from keywords
+        if (properties.length === 0 && commands.length === 0) {
+            if (/name|title|text/i.test(description)) properties.push('Name', 'Title');
+            if (/age|count|number/i.test(description)) properties.push('Age', 'Count');
+            if (/save|submit|ok/i.test(description)) commands.push('Save');
+            if (/delete|remove/i.test(description)) commands.push('Delete');
+            if (/cancel|close/i.test(description)) commands.push('Cancel');
+        }
+
+        return this._generateViewModel(properties, commands);
+    }
+
     private _parseDescription(description: string): any {
         // Simple keyword-based parsing
         return {
