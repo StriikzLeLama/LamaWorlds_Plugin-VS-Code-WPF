@@ -1,14 +1,17 @@
 import * as vscode from 'vscode';
 import { CommandRegistry } from './commands/CommandRegistry';
-import { XamlPreviewPanel } from './preview/XamlPreviewPanel';
-import { ToolboxPanel } from './toolbox/ToolboxPanel';
-import { ResourceExplorerPanel } from './inspector/ResourceExplorerPanel';
-import { DebugInspectorPanel } from './inspector/DebugInspectorPanel';
-import { RunPanel } from './utils/RunPanel';
-import { AnimationEditorPanel } from './animator/AnimationEditorPanel';
-import { ResponsiveDesignPanel } from './responsive/ResponsiveDesignPanel';
-import { ComponentMarketplacePanel } from './toolbox/ComponentMarketplacePanel';
-import { XamlNavigation } from './utils/XamlNavigation';
+import { XamlPreviewPanel } from './panels/XamlPreviewPanel';
+import { ToolboxPanel } from './panels/ToolboxPanel';
+import { ResourceExplorerPanel } from './panels/ResourceExplorerPanel';
+import { DebugInspectorPanel } from './panels/DebugInspectorPanel';
+import { RunPanel } from './panels/RunPanel';
+import { AnimationEditorPanel } from './panels/AnimationEditorPanel';
+import { ResponsiveDesignPanel } from './panels/ResponsiveDesignPanel';
+import { ComponentMarketplacePanel } from './panels/ComponentMarketplacePanel';
+import { InspectorPanel } from './inspector/inspectorPanel';
+import { AutoLayoutPanel } from './ai/autoLayoutPanel';
+import { BlendPanel } from './blend/blendPanel';
+import { XamlNavigation } from './services/XamlNavigation';
 
 /**
  * Main extension entry point
@@ -27,7 +30,7 @@ export function activate(context: vscode.ExtensionContext) {
     // Register panel commands
     context.subscriptions.push(
         vscode.commands.registerCommand('lamaworlds.openXamlPreview', () => {
-            XamlPreviewPanel.createOrShow(context.extensionUri);
+            XamlPreviewPanel.createOrShow(context.extensionUri, context);
         }),
         vscode.commands.registerCommand('lamaworlds.openToolbox', () => {
             ToolboxPanel.createOrShow(context.extensionUri);
@@ -58,6 +61,15 @@ export function activate(context: vscode.ExtensionContext) {
         }),
         vscode.commands.registerCommand('lamaworlds.insertToolboxControl', async (controlType: string) => {
             await ToolboxPanel.insertControl(controlType);
+        }),
+        vscode.commands.registerCommand('lamaworlds.openVisualTreeInspector', () => {
+            InspectorPanel.createOrShow(context.extensionUri);
+        }),
+        vscode.commands.registerCommand('lamaworlds.openAutoLayout', () => {
+            AutoLayoutPanel.createOrShow(context.extensionUri);
+        }),
+        vscode.commands.registerCommand('lamaworlds.openVisualStates', () => {
+            BlendPanel.createOrShow(context.extensionUri);
         })
     );
 
@@ -109,4 +121,7 @@ export function deactivate() {
     AnimationEditorPanel.dispose();
     ResponsiveDesignPanel.dispose();
     ComponentMarketplacePanel.dispose();
+    InspectorPanel.dispose();
+    AutoLayoutPanel.dispose();
+    BlendPanel.dispose();
 }

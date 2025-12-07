@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visual Tree Inspector</title>
+    <link rel="stylesheet" href="inspector.css">
+</head>
+<body>
+    <div class="inspector-container">
+        <div class="toolbar">
+            <button class="btn" id="refreshBtn">🔄 Refresh</button>
+            <button class="btn" id="expandAllBtn">📂 Expand All</button>
+            <button class="btn" id="collapseAllBtn">📁 Collapse All</button>
+        </div>
+        <div class="content">
+            <div class="tree-panel">
+                <div class="tree-header">Visual Tree</div>
+                <div class="tree-view" id="treeView">
+                    <div class="empty-state">No visual tree available. Open XAML preview to load tree.</div>
+                </div>
+            </div>
+            <div class="properties-panel">
+                <div class="properties-header">Properties</div>
+                <div class="properties-content" id="propertiesContent">
+                    <div class="empty-state">Select an element to view properties</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="inspector.js"></script>
+</body>
+</html>
+

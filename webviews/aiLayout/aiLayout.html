@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Auto-Layout</title>
+    <link rel="stylesheet" href="aiLayout.css">
+</head>
+<body>
+    <div class="autolayout-container">
+        <div class="toolbar">
+            <button class="btn btn-primary" id="analyzeBtn">🔍 Analyze XAML</button>
+            <button class="btn" id="applyAllBtn" disabled>✅ Apply All</button>
+        </div>
+        <div class="content">
+            <div class="suggestions-panel">
+                <div class="panel-header">Suggestions</div>
+                <div class="suggestions-list" id="suggestionsList">
+                    <div class="empty-state">Click "Analyze XAML" to get suggestions</div>
+                </div>
+            </div>
+            <div class="preview-panel">
+                <div class="panel-header">Before / After</div>
+                <div class="diff-view" id="diffView">
+                    <div class="empty-state">Select a suggestion to preview changes</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="aiLayout.js"></script>
+</body>
+</html>
+

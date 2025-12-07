@@ -3,7 +3,7 @@ import { ProjectCreator } from '../mvvm/ProjectCreator';
 import { MvvmTools } from '../mvvm/MvvmTools';
 import { XamlRefactoring } from '../refactor/XamlRefactoring';
 import { AIFeatures } from '../ai/AIFeatures';
-import { HotReloadEngine } from '../utils/HotReloadEngine';
+import { HotReloadEngine } from '../services/HotReloadEngine';
 
 /**
  * Central command registry

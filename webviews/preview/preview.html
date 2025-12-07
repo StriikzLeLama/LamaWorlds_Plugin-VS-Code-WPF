@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WPF Interactive Preview</title>
+    <link rel="stylesheet" href="preview.css">
+</head>
+<body>
+    <div class="preview-container">
+        <div class="preview-toolbar">
+            <div class="toolbar-left">
+                <button id="refreshBtn" class="toolbar-btn" title="Refresh Preview">
+                    <span class="icon">🔄</span>
+                </button>
+                <button id="modeBtn" class="toolbar-btn" title="Toggle Mode">
+                    <span class="icon">⚡</span>
+                    <span id="modeLabel">FastLive</span>
+                </button>
+            </div>
+            <div class="toolbar-right">
+                <div class="zoom-controls">
+                    <button id="zoomOutBtn" class="toolbar-btn" title="Zoom Out">−</button>
+                    <span id="zoomLabel">100%</span>
+                    <button id="zoomInBtn" class="toolbar-btn" title="Zoom In">+</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="preview-content" id="previewContent">
+            <div class="preview-image-container" id="imageContainer">
+                <img id="previewImage" alt="XAML Preview" />
+                <canvas id="overlayCanvas"></canvas>
+            </div>
+            <div class="preview-loading" id="loadingIndicator">
+                <div class="spinner"></div>
+                <p>Rendering preview...</p>
+            </div>
+            <div class="preview-error" id="errorIndicator" style="display: none;">
+                <p id="errorMessage"></p>
+            </div>
+        </div>
+    </div>
+    
+    <script src="preview.js"></script>
+</body>
+</html>
+

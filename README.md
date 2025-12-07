@@ -2,11 +2,12 @@
 
 **The Ultimate Visual Studio-Level WPF Development Extension for VS Code**
 
-An extremely advanced VS Code extension that brings **Visual Studio-level WPF development features** into VS Code, plus many premium AI-powered tools, animation editor, responsive design helpers, and a component marketplace.
+An extremely advanced VS Code extension that brings **Visual Studio-level WPF development features** into VS Code, plus many premium AI-powered tools, interactive designer, animation editor, responsive design helpers, and a component marketplace.
 
 ![Version](https://img.shields.io/badge/version-1.0.0-blue)
 ![VS Code](https://img.shields.io/badge/VS%20Code-1.80.0+-green)
 ![.NET](https://img.shields.io/badge/.NET-8.0-purple)
+![License](https://img.shields.io/badge/license-MIT-green)
 
 ---
 
@@ -15,27 +16,32 @@ An extremely advanced VS Code extension that brings **Visual Studio-level WPF de
 ### 🎯 Core WPF Development
 
 - **WPF Project Generator** - Create .NET 8 WPF projects with MVVM structure
-- **XAML Live Preview** - Real-time preview with auto-refresh
+- **🆕 Interactive WPF Designer** - Full drag & drop designer with live preview, resize handles, and element selection
+- **XAML Live Preview** - Real-time preview with WPF renderer engine
 - **WPF Toolbox** - Drag & drop controls into XAML
 - **Smart Navigation** - Ctrl+Click to navigate bindings, resources, events
 - **XAML Refactoring** - Extract, wrap, convert, rename, generate styles
 - **MVVM Power Tools** - Auto-generate ViewModels, Commands, DataTemplates
 - **Resource Explorer** - Browse and preview all resources
-- **Visual Tree Inspector** - Debug UI with layout metrics
+- **🆕 Visual Tree Inspector** - Deep XAML tree parsing with node selection and property inspection
 - **Hot Reload** - Live reload on file changes
 - **Build & Run Panel** - Integrated build, run, and packaging
 
 ### 🤖 AI-Powered Features
 
 - **AI UI Generator** - Describe UI in natural language, get XAML + ViewModel
+- **🆕 AI Auto-Layout Engine** - Figma Magic Layout style suggestions (reduce nesting, normalize margins, Grid→StackPanel)
 - **Layout Optimizer** - Analyze and optimize XAML structure
 - **Auto-Fix XAML** - Automatically fix common XAML errors
 - **ViewModel Generator** - Infer ViewModel from XAML bindings
 
 ### 🎬 Advanced Tools
 
-- **Animation Editor** - Timeline-based animation editor with keyframes
+- **Animation Editor** - Timeline-based animation editor with keyframes (After Effects-like)
+- **🆕 Responsive Preview Panel** - Multi-size previews (Mobile 375x812, Tablet 768x1024, Desktop 1366x768)
 - **Responsive Design Engine** - Generate responsive layouts and converters
+- **🆕 WPF Blend Clone** - Visual States and Triggers editor
+- **🆕 C# Execution Sandbox** - Real-time code-behind simulator for event handlers
 - **Component Marketplace** - Install ready-to-use components (GlassCard, NeonButton, etc.)
 
 ---
@@ -80,11 +86,11 @@ npm run package
 4. Enter project name
 5. Project created with full MVVM structure!
 
-### 2. Open XAML Preview
+### 2. Open Interactive XAML Preview
 
 1. Open any `.xaml` file
 2. Press `Ctrl+Shift+P` → `Lama Worlds: Open XAML Preview`
-3. See live preview on the right side
+3. See live preview with drag & drop, resize handles, and element selection!
 
 ### 3. Use the Toolbox
 
@@ -109,15 +115,27 @@ Generates complete .NET 8 WPF project with:
 - RelayCommand implementation
 - Ready-to-use project structure
 
-### 2️⃣ XAML Live Preview
+### 2️⃣ 🆕 Interactive WPF Designer
 
 **Command**: `Lama Worlds: Open XAML Preview`
 
-- **Real-time rendering** - See changes as you type
-- **Auto-refresh** - Updates on file save
-- **Split view** - XAML editor (left) + Preview (right)
-- **Interactive mode** - Clicks forwarded to running app
-- **Screenshot fallback** - Works even when app isn't running
+**Revolutionary Features:**
+- **Real-time WPF Rendering** - Uses .NET 8 WPF renderer engine for pixel-perfect preview
+- **Drag & Drop Repositioning** - Click and drag elements to reposition them
+- **Resize Handles** - 8 resize handles (corners + edges) around selected elements
+- **Element Selection** - Click any element in preview to select and highlight
+- **Live XAML Updates** - XAML automatically updates when dragging/resizing
+- **Smart Grid Snapping** - Auto-detects Grid cells and snaps elements
+- **Margin/Padding Guides** - Visual guides showing layout spacing
+- **Two Rendering Modes**:
+  - **FastLive** - Instant preview using XamlReader.Load
+  - **FullBuild** - Complete project build and run
+
+**How it works:**
+- WPF renderer executable (`preview-engine/renderer/`) captures UI as PNG
+- JSON message bridge between VS Code ↔ Renderer
+- Visual tree parser maps coordinates to elements for hit testing
+- Interactive controllers handle drag, resize, and selection
 
 ### 3️⃣ WPF Toolbox
 
@@ -176,37 +194,88 @@ Navigate seamlessly between XAML and C#:
 - Find where resources are used
 - Open resource files with one click
 
-### 8️⃣ Visual Tree Inspector
+### 8️⃣ 🆕 Visual Tree Inspector
 
-**Command**: `Lama Worlds: Open Debug Inspector`
+**Command**: `Lama Worlds: Open Visual Tree Inspector`
 
-- **Visual tree view** - See complete element hierarchy
-- **Layout metrics** - Actual size, margin, padding
-- **DataContext viewer** - See bound data
-- **Highlight in preview** - Visual selection
-- **Edit properties** - Real-time property editing
+**Advanced Features:**
+- **Deep XAML Tree Parsing** - Complete element hierarchy visualization
+- **Node Selection** - Click any node to inspect properties
+- **Preview Synchronization** - Selection in inspector highlights element in preview
+- **Property Inspector** - View bounds, margin, padding, Grid position, Canvas position
+- **Jump to XAML** - Instantly navigate to element in XAML editor
+- **DataContext & Bindings** - Inspect bound data and bindings
+- **Margin/Padding Visual Debugging** - Visual guides for layout debugging
 
-### 9️⃣ Animation Editor
+### 9️⃣ Animation Editor (After Effects-like)
 
 **Command**: `Lama Worlds: Open Animation Editor`
 
-- **Timeline interface** - Visual keyframe editor
-- **Multiple properties** - Opacity, Transform X/Y, etc.
-- **Easing functions** - Linear, EaseIn, EaseOut, Bounce, Elastic
-- **Duration control** - Set animation duration
-- **Preview** - See animation in real-time
-- **Generate Storyboard** - Auto-generate XAML Storyboard
+- **Timeline Interface** - Visual keyframe editor with ruler
+- **Drag Keyframes** - Click and drag keyframes on timeline
+- **Multiple Properties** - Animate Opacity, Transform X/Y, Colors, Margins
+- **Easing Curves** - Linear, EaseIn, EaseOut, EaseInOut, Bounce, Elastic
+- **Duration Control** - Set animation duration
+- **Preview** - See animation in real-time in preview renderer
+- **Generate Storyboard** - Auto-generate XAML Storyboard code
 
-### 🔟 Responsive Design Engine
+### 🔟 🆕 Responsive Preview Panel
 
 **Command**: `Lama Worlds: Open Responsive Design`
 
-- **Breakpoints** - Mobile (0-600px), Tablet (601-1024px), Desktop (1025px+)
+**Multi-Size Previews:**
+- **Mobile** - 375x812 (iPhone standard)
+- **Tablet** - 768x1024 (iPad standard)
+- **Desktop** - 1366x768 (Standard desktop)
+- **Custom Sizes** - Input custom width/height
+
+**Features:**
+- **Real-time Rendering** - Each size renders independently
+- **Breakpoint Management** - Define custom breakpoints
 - **Responsive Grid Generator** - Generate grids for different screen sizes
 - **Value Converters** - Generate responsive converters
-- **Multi-size Preview** - Preview in Mobile/Tablet/Desktop sizes
+- **Side-by-Side Comparison** - Compare layouts across sizes
 
-### 1️⃣1️⃣ AI Features
+### 1️⃣1️⃣ 🆕 AI Auto-Layout Engine (Figma Magic Layout Style)
+
+**Command**: `Lama Worlds: Open AI Auto-Layout`
+
+**Intelligent Suggestions:**
+- **Reduce Nesting** - Detects excessive nesting levels and suggests flattening
+- **Normalize Margins** - Finds inconsistent margins and suggests standardization
+- **Remove Unnecessary Panels** - Identifies single-child panels that can be removed
+- **Grid → StackPanel** - Suggests converting simple Grids to StackPanel
+- **Auto-Alignment** - Detects alignment opportunities
+- **Before/After Diff** - Visual comparison of changes
+
+**How it works:**
+- Analyzes XAML structure using AST-level parsing
+- Applies best practices and design patterns
+- One-click apply suggestions
+- Batch apply all suggestions
+
+### 1️⃣2️⃣ 🆕 WPF Blend Clone (Visual States Editor)
+
+**Command**: `Lama Worlds: Open Visual States Editor`
+
+**Full Visual States Management:**
+- **Create Visual States** - Define Normal, MouseOver, Pressed, Disabled states
+- **State Transitions** - Configure smooth transitions between states
+- **Triggers** - EventTrigger, DataTrigger, PropertyTrigger
+- **Interactions** - Define interaction behaviors
+- **State Animations** - Animate properties during state changes
+- **Generate XAML** - Auto-generate VisualStateManager XAML
+
+### 1️⃣3️⃣ 🆕 C# Execution Sandbox
+
+**Real-time Code-Behind Simulator:**
+- **Secure Sandbox** - Isolated .NET 8 console sandbox for code execution
+- **Event Handler Simulation** - Test event handlers without running full app
+- **Binding Simulation** - Simulate bindings and data updates
+- **Logs & Exceptions** - Real-time logs and exception handling
+- **Return Results** - Get execution results back to VS Code
+
+### 1️⃣4️⃣ AI Features
 
 #### AI UI Generator
 **Command**: `Lama Worlds: AI Generate UI`
@@ -248,7 +317,7 @@ Infers from XAML:
 - Commands
 - INotifyPropertyChanged implementation
 
-### 1️⃣2️⃣ Component Marketplace
+### 1️⃣5️⃣ Component Marketplace
 
 **Command**: `Lama Worlds: Open Component Marketplace`
 
@@ -266,7 +335,7 @@ Infers from XAML:
 - Preview before install
 - Auto-generates ViewModel if needed
 
-### 1️⃣3️⃣ Build & Run Panel
+### 1️⃣6️⃣ Build & Run Panel
 
 **Command**: `Lama Worlds: Open Run & Build Panel`
 
@@ -279,7 +348,7 @@ Infers from XAML:
 - **Publish** - Publish for distribution
 - **Integrated logs** - See build output in real-time
 
-### 1️⃣4️⃣ Snippets
+### 1️⃣7️⃣ Snippets
 
 **XAML Snippets:**
 - `window` - WPF Window template
@@ -347,14 +416,48 @@ lamaworlds-wpf-studio-pro/
 │   │   ├── AnimationEditorPanel.ts
 │   │   ├── ResponsiveDesignPanel.ts
 │   │   └── ComponentMarketplacePanel.ts
+│   ├── preview/                  # Preview engine
+│   │   └── previewEngine.ts
+│   ├── inspector/                # Visual tree inspector
+│   │   ├── inspectorPanel.ts
+│   │   ├── treeParser.ts
+│   │   └── highlightManager.ts
+│   ├── interactive/              # Interactive designer
+│   │   ├── dragController.ts
+│   │   └── resizeController.ts
+│   ├── ai/                       # AI features
+│   │   ├── AIFeatures.ts
+│   │   ├── autoLayout.ts
+│   │   └── autoLayoutPanel.ts
+│   ├── blend/                    # Visual States editor
+│   │   └── blendPanel.ts
+│   ├── responsive/               # Responsive manager
+│   │   └── responsiveManager.ts
+│   ├── sandbox/                  # C# sandbox
+│   │   └── sandboxManager.ts
 │   ├── services/                 # Core services
 │   │   ├── XamlRefactoring.ts
 │   │   ├── XamlNavigation.ts
 │   │   ├── HotReloadEngine.ts
 │   │   ├── ProjectCreator.ts
 │   │   └── MvvmTools.ts
-│   └── ai/                       # AI features
-│       └── AIFeatures.ts
+│   └── utils/                    # Utilities
+│       ├── PathHelper.ts
+│       └── XamlParser.ts
+├── preview-engine/               # WPF renderer
+│   └── renderer/
+│       ├── Renderer.csproj
+│       ├── RendererWindow.xaml
+│       └── RendererWindow.xaml.cs
+├── sandbox-engine/               # C# sandbox
+│   ├── Sandbox.csproj
+│   └── Program.cs
+├── webviews/                     # WebView UIs
+│   ├── preview/
+│   ├── inspector/
+│   ├── aiLayout/
+│   ├── blend/
+│   └── responsive/
 ├── snippets/                     # Code snippets
 │   ├── xaml.json
 │   └── csharp.json
@@ -371,12 +474,27 @@ lamaworlds-wpf-studio-pro/
 
 ## 🎯 Usage Examples
 
+### Use Interactive Designer
+
+1. Open a `.xaml` file
+2. Press `Ctrl+Shift+P` → `Lama Worlds: Open XAML Preview`
+3. Click any element in preview to select it
+4. Drag to reposition or use resize handles to resize
+5. XAML updates automatically!
+
 ### Generate UI with AI
 
 1. Open a XAML file
 2. Press `Ctrl+Shift+P` → `Lama Worlds: AI Generate UI`
 3. Describe: "Create a login form with username, password, and submit button"
 4. XAML and ViewModel are generated automatically!
+
+### Use AI Auto-Layout
+
+1. Open XAML file
+2. Press `Ctrl+Shift+P` → `Lama Worlds: Open AI Auto-Layout`
+3. Click "Analyze XAML"
+4. Review suggestions and apply them one by one or all at once
 
 ### Create Animation
 
@@ -386,19 +504,18 @@ lamaworlds-wpf-studio-pro/
 4. Click "Generate Storyboard"
 5. Storyboard XAML is inserted!
 
-### Install Component
+### Inspect Visual Tree
 
-1. Press `Ctrl+Shift+P` → `Lama Worlds: Open Component Marketplace`
-2. Browse components
-3. Click "Preview" to see it
-4. Click "Install" to add to your XAML
+1. Press `Ctrl+Shift+P` → `Lama Worlds: Open Visual Tree Inspector`
+2. Browse element hierarchy
+3. Click any element to see properties
+4. Click "Jump to XAML" to navigate to element
 
-### Optimize Layout
+### Preview Responsive Layouts
 
-1. Open XAML file
-2. Right-click → `Lama Worlds: AI Optimize Layout`
-3. Review suggestions
-4. Apply fixes automatically
+1. Press `Ctrl+Shift+P` → `Lama Worlds: Open Responsive Design`
+2. Select Mobile/Tablet/Desktop size
+3. See real-time preview for each size
 
 ---
 
@@ -409,6 +526,7 @@ lamaworlds-wpf-studio-pro/
 - Ensure a `.xaml` file is open
 - Check that file is valid XAML
 - Try manually opening: `Lama Worlds: Open XAML Preview`
+- Renderer will auto-build on first use
 
 ### Hot Reload Not Working
 
@@ -428,12 +546,18 @@ lamaworlds-wpf-studio-pro/
 - Run `dotnet restore` in project folder
 - Check project file for errors
 
+### Renderer Not Building
+
+- Ensure .NET 8 SDK is installed
+- Check that `preview-engine/renderer/` folder exists
+- Extension will auto-build renderer on first use
+
 ---
 
 ## 📝 Requirements
 
 - **VS Code** 1.80.0 or higher
-- **.NET 8 SDK** (for WPF development)
+- **.NET 8 SDK** (for WPF development and renderer)
 - **Windows** (WPF is Windows-only)
 - **Node.js** (for building extension)
 
@@ -445,9 +569,20 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 
 ---
 
+## 💝 Support the Project
+
+This extension is **100% free and open-source**. If you find it useful, consider supporting the project:
+
+- **[GitHub Sponsors](https://github.com/sponsors/lamaworlds)** - Support ongoing development
+- **[Ko-fi](https://ko-fi.com/striikzlelama)** - Buy me a coffee ☕
+
+Your support helps maintain and improve this extension! 🙏
+
+---
+
 ## 📄 License
 
-MIT License
+MIT License - Free and open-source forever
 
 ---
 
@@ -461,14 +596,20 @@ MIT License
 
 | Feature | Visual Studio | Lama Worlds WPF Studio PRO |
 |---------|--------------|---------------------------|
-| XAML Designer | ✅ | ✅ (Live Preview) |
+| XAML Designer | ✅ | ✅ (Interactive Designer) |
+| Drag & Drop | ✅ | ✅ (Enhanced) |
+| Resize Handles | ✅ | ✅ |
+| Visual Tree Inspector | ✅ | ✅ (Enhanced) |
 | Toolbox | ✅ | ✅ (Enhanced) |
 | MVVM Tools | ✅ | ✅ (AI-Powered) |
 | Resource Explorer | ✅ | ✅ (Enhanced) |
 | Debug Inspector | ✅ | ✅ (Visual Tree) |
 | Animation Editor | ❌ | ✅ (Timeline) |
-| Responsive Design | ❌ | ✅ (Engine) |
+| Responsive Design | ❌ | ✅ (Multi-Size Preview) |
 | AI UI Generator | ❌ | ✅ |
+| AI Auto-Layout | ❌ | ✅ (Figma Style) |
+| Visual States Editor | ✅ | ✅ (Blend Clone) |
+| C# Sandbox | ❌ | ✅ |
 | Component Marketplace | ❌ | ✅ |
 | Hot Reload | ✅ | ✅ (Enhanced) |
 

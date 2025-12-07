@@ -174,6 +174,24 @@
                 "title": "Lama Worlds: AI Generate ViewModel from XAML",
                 "icon": "$(symbol-class)",
                 "category": "Lama Worlds"
+            },
+            {
+                "command": "lamaworlds.openVisualTreeInspector",
+                "title": "Lama Worlds: Open Visual Tree Inspector",
+                "icon": "$(list-tree)",
+                "category": "Lama Worlds"
+            },
+            {
+                "command": "lamaworlds.openAutoLayout",
+                "title": "Lama Worlds: Open AI Auto-Layout",
+                "icon": "$(layout)",
+                "category": "Lama Worlds"
+            },
+            {
+                "command": "lamaworlds.openVisualStates",
+                "title": "Lama Worlds: Open Visual States Editor",
+                "icon": "$(symbol-state)",
+                "category": "Lama Worlds"
             }
         ],
         "views": {
@@ -329,5 +347,5 @@
         "@types/vscode": "^1.80.0",
         "@types/node": "18.x",
         "typescript": "^5.1.3"
-    },
+    }
 }

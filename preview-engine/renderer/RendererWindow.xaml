@@ -1,0 +1,16 @@
+<Window x:Class="Renderer.RendererWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="WPF Renderer" 
+        Width="800" 
+        Height="600"
+        WindowStyle="None"
+        ShowInTaskbar="False"
+        Visibility="Hidden"
+        AllowsTransparency="True"
+        Background="Transparent">
+    <Grid x:Name="ContentGrid">
+        <!-- Content will be loaded dynamically -->
+    </Grid>
+</Window>
+
