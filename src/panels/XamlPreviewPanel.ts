@@ -12,12 +12,15 @@ import { HighlightManager } from '../inspector/highlightManager';
  */
 export class XamlPreviewPanel {
     public static currentPanel: XamlPreviewPanel | undefined;
+    private static _userClosed: boolean = false; // Tracks if user explicitly closed the panel
+    private static _lastAutoOpen: number = 0;
     private static readonly viewType = 'xamlPreview';
     private readonly _panel: vscode.WebviewPanel;
     private readonly _extensionUri: vscode.Uri;
     private _disposables: vscode.Disposable[] = [];
     private _xamlContent: string = '';
     private _xamlDocument: vscode.TextDocument | null = null;
+    private _isDisposed: boolean = false; // Flag to track if panel is disposed
     
     // Preview engine and components
     private _previewEngine: PreviewEngine;
@@ -43,8 +46,33 @@ export class XamlPreviewPanel {
         // Initialize preview engine asynchronously (non-blocking)
         this._initializePreviewEngine(context);
 
-        // Listen for when the panel is disposed
-        this._panel.onDidDispose(() => this.dispose(), null, this._disposables);
+        // Listen for when the panel is disposed (user closes it)
+        this._panel.onDidDispose(() => {
+            // Mark as disposed immediately
+            this._isDisposed = true;
+            XamlPreviewPanel._userClosed = true;
+            
+            // Clear static reference so it doesn't auto-reopen
+            if (XamlPreviewPanel.currentPanel === this) {
+                XamlPreviewPanel.currentPanel = undefined;
+            }
+            this.dispose();
+        }, null, this._disposables);
+        
+        // Listen for visibility changes to prevent auto-refresh when hidden
+        this._panel.onDidChangeViewState((e) => {
+            // Check if panel is still active
+            if (this._isDisposed) return;
+            
+            try {
+                // If panel becomes visible and we have XAML content, refresh
+                if (e.webviewPanel.visible && this._xamlContent && this._panel.webview) {
+                    this._refreshPreview();
+                }
+            } catch (error) {
+                // Panel was disposed, ignore
+            }
+        }, null, this._disposables);
 
         // Handle messages from the webview
         this._panel.webview.onDidReceiveMessage(
@@ -55,35 +83,70 @@ export class XamlPreviewPanel {
             this._disposables
         );
 
-        // Watch for XAML changes
+        // Watch for XAML changes (only if panel is visible and not disposed)
         const watcher = vscode.workspace.createFileSystemWatcher('**/*.xaml');
         watcher.onDidChange(async (uri) => {
-            if (this._panel.visible && this._xamlDocument?.uri.toString() === uri.toString()) {
-                await this._refreshPreview();
+            // Check if panel is still active before accessing properties
+            if (this._isDisposed) return;
+            
+            try {
+                if (this._panel && 
+                    this._panel.webview && 
+                    this._panel.visible && 
+                    this._xamlDocument?.uri.toString() === uri.toString()) {
+                    await this._refreshPreview();
+                }
+            } catch (error) {
+                // Panel was disposed during check, ignore
             }
         });
         this._disposables.push(watcher);
 
-        // Watch for active editor changes
+        // Watch for active editor changes (only if panel is visible and not disposed)
         vscode.window.onDidChangeActiveTextEditor(async (editor) => {
-            if (editor && editor.document.fileName.endsWith('.xaml')) {
-                this._xamlDocument = editor.document;
-                this._dragController.setXamlDocument(editor.document);
-                this._resizeController.setXamlDocument(editor.document);
-                await this._refreshPreview();
+            // Check if panel is still active before accessing properties
+            if (this._isDisposed) return;
+            
+            try {
+                if (this._panel && 
+                    this._panel.webview && 
+                    this._panel.visible && 
+                    editor && 
+                    editor.document.fileName.endsWith('.xaml')) {
+                    this._xamlDocument = editor.document;
+                    this._dragController.setXamlDocument(editor.document);
+                    this._resizeController.setXamlDocument(editor.document);
+                    await this._refreshPreview();
+                }
+            } catch (error) {
+                // Panel was disposed during check, ignore
             }
         });
     }
 
-    public static createOrShow(extensionUri: vscode.Uri, context: vscode.ExtensionContext) {
+    public static createOrShow(extensionUri: vscode.Uri, context: vscode.ExtensionContext, options?: { auto?: boolean }) {
+        const auto = options?.auto ?? false;
+        // If user previously closed the panel, do not auto-reopen
+        if (auto && XamlPreviewPanel._userClosed) {
+            return;
+        }
+
         const column = vscode.window.activeTextEditor
             ? vscode.window.activeTextEditor.viewColumn
             : undefined;
 
-        // If we already have a panel, show it
+        // If we already have a panel, show it (but don't force focus)
         if (XamlPreviewPanel.currentPanel) {
-            XamlPreviewPanel.currentPanel._panel.reveal(column);
+            // Only reveal if panel is not visible, otherwise just return
+            if (!XamlPreviewPanel.currentPanel._panel.visible) {
+                XamlPreviewPanel.currentPanel._panel.reveal(column, false); // false = don't take focus
+            }
             return;
+        }
+
+        // If this is a user-triggered open, reset the userClosed flag
+        if (!auto) {
+            XamlPreviewPanel._userClosed = false;
         }
 
         // Otherwise, create a new panel
@@ -97,7 +160,7 @@ export class XamlPreviewPanel {
                     vscode.Uri.joinPath(extensionUri, 'webviews'),
                     vscode.Uri.joinPath(extensionUri, 'out')
                 ],
-                retainContextWhenHidden: false // Allow navigation to other tabs
+                retainContextWhenHidden: true // Keep context when hidden to allow navigation
             }
         );
 
@@ -105,7 +168,7 @@ export class XamlPreviewPanel {
     }
 
     public static refreshPreview(uri: vscode.Uri) {
-        if (XamlPreviewPanel.currentPanel) {
+        if (XamlPreviewPanel.currentPanel && !XamlPreviewPanel.currentPanel._isDisposed) {
             XamlPreviewPanel.currentPanel._refreshPreview();
         }
     }
@@ -117,19 +180,42 @@ export class XamlPreviewPanel {
     }
 
     public dispose() {
-        XamlPreviewPanel.currentPanel = undefined;
-        this._previewEngine.dispose();
-        this._treeParser.clear();
-        this._highlightManager.clearHighlights();
+        // Mark as disposed immediately to prevent any further operations
+        this._isDisposed = true;
+        XamlPreviewPanel._userClosed = true;
+        
+        // Clear static reference first
+        if (XamlPreviewPanel.currentPanel === this) {
+            XamlPreviewPanel.currentPanel = undefined;
+        }
+        
+        // Clean up components
+        try {
+            this._previewEngine.stopRenderer();
+            this._previewEngine.dispose();
+            this._treeParser.clear();
+            this._highlightManager.clearHighlights();
+        } catch (error) {
+            // Ignore errors during cleanup
+        }
 
         // Clean up our resources
-        this._panel.dispose();
-
         while (this._disposables.length) {
             const x = this._disposables.pop();
             if (x) {
-                x.dispose();
+                try {
+                    x.dispose();
+                } catch (error) {
+                    // Ignore errors during cleanup
+                }
             }
+        }
+        
+        // Dispose panel last
+        try {
+            this._panel.dispose();
+        } catch (error) {
+            // Panel may already be disposed, ignore
         }
     }
 
@@ -161,15 +247,23 @@ export class XamlPreviewPanel {
                 estimatedTime = 'Please wait...';
             }
             
-            this._panel.webview.html = this._getLoadingHtml(status, elapsed, estimatedTime);
+            if (this._panel && this._panel.webview) {
+                this._panel.webview.html = this._getLoadingHtml(status, elapsed, estimatedTime);
+            }
         }, 2000);
 
         const initTimeout = setTimeout(() => {
             clearInterval(progressInterval);
-            this._panel.webview.html = this._getErrorHtml(
-                'Preview engine initialization is taking longer than expected. ' +
-                'The renderer may need to be built. Please check the Output panel for details.'
-            );
+            if (!this._isDisposed && this._panel && this._panel.webview) {
+                try {
+                    this._panel.webview.html = this._getErrorHtml(
+                        'Preview engine initialization is taking longer than expected. ' +
+                        'The renderer may need to be built. Please check the Output panel for details.'
+                    );
+                } catch (error) {
+                    // Panel was disposed, ignore
+                }
+            }
         }, 120000); // 2 minutes timeout
 
         try {
@@ -207,7 +301,13 @@ export class XamlPreviewPanel {
                 userMessage += ` ${errorMessage}`;
             }
             
-            this._panel.webview.html = this._getErrorHtml(userMessage);
+            if (!this._isDisposed && this._panel && this._panel.webview) {
+                try {
+                    this._panel.webview.html = this._getErrorHtml(userMessage);
+                } catch (error) {
+                    // Panel was disposed, ignore
+                }
+            }
             
             // Show notification to user
             vscode.window.showWarningMessage(
@@ -226,7 +326,13 @@ export class XamlPreviewPanel {
     private async _update() {
         const editor = vscode.window.activeTextEditor;
         if (!editor || !editor.document.fileName.endsWith('.xaml')) {
-            this._panel.webview.html = this._getErrorHtml('No XAML file is currently open.');
+            if (!this._isDisposed && this._panel && this._panel.webview) {
+                try {
+                    this._panel.webview.html = this._getErrorHtml('No XAML file is currently open.');
+                } catch (error) {
+                    // Panel was disposed, ignore
+                }
+            }
             return;
         }
 
@@ -239,6 +345,11 @@ export class XamlPreviewPanel {
     }
 
     private async _refreshPreview() {
+        // Check if panel is disposed or not available
+        if (this._isDisposed || !this._panel || !this._panel.webview) {
+            return; // Panel is disposed, skip refresh
+        }
+
         const editor = vscode.window.activeTextEditor;
         if (!editor || !editor.document.fileName.endsWith('.xaml')) {
             return;
@@ -250,12 +361,22 @@ export class XamlPreviewPanel {
             // Render using preview engine
             const result = await this._previewEngine.renderFastLive(this._xamlContent);
             
+            // Check again if panel is still active after async operation
+            if (this._isDisposed || !this._panel || !this._panel.webview) {
+                return; // Panel was disposed during rendering
+            }
+            
             // Get layout map
             const layoutMap = await this._previewEngine.getLayoutMap();
             
             // Parse layout map
             if (layoutMap) {
                 this._treeParser.parseLayoutMap(layoutMap);
+            }
+
+            // Check again before sending message
+            if (this._isDisposed || !this._panel || !this._panel.webview) {
+                return;
             }
 
             // Send preview update to webview
@@ -267,6 +388,11 @@ export class XamlPreviewPanel {
                 layoutMap: layoutMap
             });
         } catch (error: any) {
+            // Check again before sending error message
+            if (this._isDisposed || !this._panel || !this._panel.webview) {
+                return;
+            }
+            
             this._panel.webview.postMessage({
                 command: 'previewError',
                 error: error.message || 'Preview error occurred'
@@ -327,12 +453,22 @@ export class XamlPreviewPanel {
     }
 
     private async _handleElementSelected(elementId: string, element: any) {
+        // Check if panel is still active
+        if (this._isDisposed || !this._panel || !this._panel.webview) {
+            return;
+        }
+
         const layoutElement = this._treeParser.getElementById(elementId);
         if (layoutElement) {
             this._highlightManager.selectElement(layoutElement);
             
             // Scroll to element in XAML editor
             await this._scrollToElement(layoutElement);
+            
+            // Check again after async operation
+            if (this._isDisposed || !this._panel || !this._panel.webview) {
+                return;
+            }
             
             // Send highlight update to webview
             this._panel.webview.postMessage({

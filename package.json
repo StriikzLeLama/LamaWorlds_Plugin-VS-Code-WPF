@@ -4,6 +4,14 @@
     "description": "Advanced WPF development extension with Visual Studio-level features: XAML Designer, Live Preview, MVVM Tools, Debug Inspector, and more.",
     "version": "1.0.0",
     "publisher": "lamaworlds",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/lamaworlds/lamaworlds-wpf-studio.git"
+    },
+    "bugs": {
+        "url": "https://github.com/lamaworlds/lamaworlds-wpf-studio/issues"
+    },
+    "homepage": "https://github.com/lamaworlds/lamaworlds-wpf-studio#readme",
     "engines": {
         "vscode": "^1.80.0"
     },
@@ -198,6 +206,36 @@
                 "title": "Lama Worlds: Open Command Palette",
                 "icon": "$(list-flat)",
                 "category": "Lama Worlds"
+            },
+            {
+                "command": "lamaworlds.openNuGetManager",
+                "title": "Lama Worlds: NuGet Manager",
+                "icon": "$(package)",
+                "category": "Lama Worlds"
+            },
+            {
+                "command": "lamaworlds.restoreNuGetPackages",
+                "title": "Lama Worlds: Restore NuGet Packages",
+                "icon": "$(sync)",
+                "category": "Lama Worlds"
+            },
+            {
+                "command": "lamaworlds.installNuGetPackage",
+                "title": "Lama Worlds: Install NuGet Package",
+                "icon": "$(add)",
+                "category": "Lama Worlds"
+            },
+            {
+                "command": "lamaworlds.updateNuGetPackage",
+                "title": "Lama Worlds: Update NuGet Package",
+                "icon": "$(arrow-up)",
+                "category": "Lama Worlds"
+            },
+            {
+                "command": "lamaworlds.removeNuGetPackage",
+                "title": "Lama Worlds: Remove NuGet Package",
+                "icon": "$(trash)",
+                "category": "Lama Worlds"
             }
         ],
         "views": {
@@ -331,6 +369,11 @@
         ],
         "keybindings": [
             {
+                "command": "lamaworlds.openCommandPalette",
+                "key": "ctrl+shift+l",
+                "when": "true"
+            },
+            {
                 "command": "lamaworlds.openXamlPreview",
                 "key": "ctrl+shift+p",
                 "when": "editorLangId == xml && resourceExtname == .xaml"
@@ -358,7 +401,7 @@
         "vscode:prepublish": "npm run compile",
         "compile": "tsc -p ./",
         "watch": "tsc -watch -p ./",
-        "package": "vsce package"
+        "package": "npx @vscode/vsce package"
     },
     "devDependencies": {
         "@types/vscode": "^1.80.0",

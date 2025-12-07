@@ -22,6 +22,11 @@ import { MarketplaceTreeProvider } from './panels/MarketplaceTreeProvider';
 import { XamlNavigation } from './services/XamlNavigation';
 import { DebugConsole } from './services/DebugConsole';
 import { PerformanceMonitor } from './services/PerformanceMonitor';
+import { NuGetPanel } from './panels/NuGetPanel';
+import { AutoRestore } from './nuget/autoRestore';
+import { ProjectScanner } from './nuget/projectScanner';
+import { NuGetRestore } from './nuget/restore';
+import { NuGetManager } from './nuget/manager';
 
 /**
  * Main extension entry point
@@ -106,7 +111,7 @@ export function activate(context: vscode.ExtensionContext) {
     context.subscriptions.push(
         vscode.commands.registerCommand('lamaworlds.openXamlPreview', () => {
             try {
-                XamlPreviewPanel.createOrShow(context.extensionUri, context);
+                XamlPreviewPanel.createOrShow(context.extensionUri, context, { auto: false });
             } catch (error: any) {
                 console.error('Error opening XAML Preview:', error);
                 vscode.window.showErrorMessage(`Failed to open XAML Preview: ${error?.message || error}`);
@@ -227,6 +232,105 @@ export function activate(context: vscode.ExtensionContext) {
                 console.error('Error opening Command Palette:', error);
                 vscode.window.showErrorMessage(`Failed to open Command Palette: ${error?.message || error}`);
             }
+        }),
+        vscode.commands.registerCommand('lamaworlds.openNuGetManager', () => {
+            try {
+                NuGetPanel.createOrShow(context.extensionUri, context);
+            } catch (error: any) {
+                console.error('Error opening NuGet Manager:', error);
+                vscode.window.showErrorMessage(`Failed to open NuGet Manager: ${error?.message || error}`);
+            }
+        }),
+        vscode.commands.registerCommand('lamaworlds.restoreNuGetPackages', async () => {
+            try {
+                const csprojPath = await ProjectScanner.findNearestCsproj();
+                if (!csprojPath) {
+                    vscode.window.showErrorMessage('No .csproj file found. Please open a project file.');
+                    return;
+                }
+                await NuGetRestore.runRestoreWithNotification(csprojPath);
+            } catch (error: any) {
+                console.error('Error restoring NuGet packages:', error);
+                vscode.window.showErrorMessage(`Failed to restore packages: ${error?.message || error}`);
+            }
+        }),
+        vscode.commands.registerCommand('lamaworlds.installNuGetPackage', async () => {
+            try {
+                const csprojPath = await ProjectScanner.findNearestCsproj();
+                if (!csprojPath) {
+                    vscode.window.showErrorMessage('No .csproj file found. Please open a project file.');
+                    return;
+                }
+                const packageId = await vscode.window.showInputBox({
+                    prompt: 'Enter NuGet package ID',
+                    placeHolder: 'e.g., Newtonsoft.Json'
+                });
+                if (!packageId) {
+                    return;
+                }
+                const version = await vscode.window.showInputBox({
+                    prompt: 'Enter version (optional, leave empty for latest)',
+                    placeHolder: 'e.g., 13.0.1'
+                });
+                await NuGetManager.installPackage(csprojPath, packageId, version || undefined);
+            } catch (error: any) {
+                console.error('Error installing NuGet package:', error);
+                vscode.window.showErrorMessage(`Failed to install package: ${error?.message || error}`);
+            }
+        }),
+        vscode.commands.registerCommand('lamaworlds.updateNuGetPackage', async () => {
+            try {
+                const csprojPath = await ProjectScanner.findNearestCsproj();
+                if (!csprojPath) {
+                    vscode.window.showErrorMessage('No .csproj file found. Please open a project file.');
+                    return;
+                }
+                const packages = await ProjectScanner.parsePackageReferences(csprojPath);
+                if (packages.length === 0) {
+                    vscode.window.showInformationMessage('No packages installed in this project.');
+                    return;
+                }
+                const packageId = await vscode.window.showQuickPick(
+                    packages.map(p => p.Include),
+                    { placeHolder: 'Select package to update' }
+                );
+                if (!packageId) {
+                    return;
+                }
+                const version = await vscode.window.showInputBox({
+                    prompt: 'Enter version (optional, leave empty for latest)',
+                    placeHolder: 'e.g., 13.0.1'
+                });
+                await NuGetManager.updatePackage(csprojPath, packageId, version || undefined);
+            } catch (error: any) {
+                console.error('Error updating NuGet package:', error);
+                vscode.window.showErrorMessage(`Failed to update package: ${error?.message || error}`);
+            }
+        }),
+        vscode.commands.registerCommand('lamaworlds.removeNuGetPackage', async () => {
+            try {
+                const csprojPath = await ProjectScanner.findNearestCsproj();
+                if (!csprojPath) {
+                    vscode.window.showErrorMessage('No .csproj file found. Please open a project file.');
+                    return;
+                }
+                const packages = await ProjectScanner.parsePackageReferences(csprojPath);
+                if (packages.length === 0) {
+                    vscode.window.showInformationMessage('No packages installed in this project.');
+                    return;
+                }
+                const packageId = await vscode.window.showQuickPick(
+                    packages.map(p => p.Include),
+                    { placeHolder: 'Select package to remove' }
+                );
+                if (!packageId) {
+                    return;
+                }
+                await NuGetManager.removePackage(csprojPath, packageId);
+            } catch (error: any) {
+                console.error('Error removing NuGet package:', error);
+                vscode.window.showErrorMessage(`Failed to remove package: ${error?.message || error}`);
+            }
         })
     );
 
@@ -275,13 +379,22 @@ export function activate(context: vscode.ExtensionContext) {
             if (editor && editor.document.fileName.endsWith('.xaml')) {
                 const config = vscode.workspace.getConfiguration('lamaworlds.wpf');
                 if (config.get('previewAutoRefresh', true)) {
-                    XamlPreviewPanel.createOrShow(context.extensionUri, context);
+                    XamlPreviewPanel.createOrShow(context.extensionUri, context, { auto: true });
                 }
             }
         } catch (error: any) {
             console.error('Error in editor change handler:', error);
         }
     });
+
+    // Initialize NuGet auto-restore
+    try {
+        AutoRestore.initialize(context);
+        debugConsole.info('NuGet auto-restore initialized');
+    } catch (error: any) {
+        console.error('Error initializing NuGet auto-restore:', error);
+        debugConsole.error(`Failed to initialize NuGet auto-restore: ${error?.message || error}`);
+    }
 }
 
 export function deactivate() {
@@ -299,4 +412,5 @@ export function deactivate() {
     AutoLayoutPanel.dispose();
     BlendPanel.dispose();
     CommandPalettePanel.dispose();
+    NuGetPanel.dispose();
 }

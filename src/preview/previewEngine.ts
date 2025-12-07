@@ -20,6 +20,7 @@ export class PreviewEngine {
     private _rendererPath: string | null = null;
     private _isInitialized: boolean = false;
     private _currentMode: 'FastLive' | 'FullBuild' = 'FastLive';
+    private _isStopping: boolean = false;
 
     private constructor() {}
 
@@ -28,6 +29,22 @@ export class PreviewEngine {
             PreviewEngine._instance = new PreviewEngine();
         }
         return PreviewEngine._instance;
+    }
+
+    /**
+     * Stop renderer process
+     */
+    public stopRenderer(): void {
+        this._isStopping = true;
+        if (this._rendererProcess) {
+            try {
+                this._rendererProcess.kill();
+            } catch (err) {
+                // ignore
+            }
+            this._rendererProcess = null;
+        }
+        this._isStopping = false;
     }
 
     /**

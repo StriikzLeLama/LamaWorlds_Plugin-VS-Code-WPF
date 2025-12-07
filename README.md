@@ -59,7 +59,7 @@ Le preview engine utilise un renderer WPF .NET 8 qui communique via stdin/stdout
 - Consultez le Debug Inspector pour les logs détaillés
 - Le fallback affiche un placeholder si le renderer ne répond pas
 
-Voir [PREVIEW_ENGINE_TROUBLESHOOTING.md](PREVIEW_ENGINE_TROUBLESHOOTING.md) pour plus de détails.
+Voir `PREVIEW_ENGINE_TROUBLESHOOTING.md` pour plus de détails.
 
 ---
 
