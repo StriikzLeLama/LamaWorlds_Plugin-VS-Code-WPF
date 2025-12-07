@@ -81,7 +81,7 @@ public partial class App : Application
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
     <Grid>
-        <TextBlock Text="Welcome to Lama Worlds WPF Studio Pro!" 
+        <TextBlock Text="Welcome to Lama Worlds WPF Studio!" 
                    HorizontalAlignment="Center" 
                    VerticalAlignment="Center"
                    FontSize="24"

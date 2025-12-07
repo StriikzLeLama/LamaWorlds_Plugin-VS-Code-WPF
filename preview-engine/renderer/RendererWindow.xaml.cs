@@ -20,11 +20,30 @@ namespace Renderer
         public RendererWindow()
         {
             InitializeComponent();
+            
+            // Make window invisible (headless mode)
+            this.WindowState = WindowState.Minimized;
+            this.ShowInTaskbar = false;
+            this.Width = 1;
+            this.Height = 1;
+            this.Visibility = Visibility.Hidden;
+            
             this.Loaded += RendererWindow_Loaded;
         }
 
         private async void RendererWindow_Loaded(object sender, RoutedEventArgs e)
         {
+            // Ready signal is already sent in App.OnStartup
+            // But send it again here as backup
+            try
+            {
+                SendResponse(new RendererResponse { Type = "ready" });
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"[Renderer] Failed to send ready in Loaded: {ex.Message}");
+            }
+            
             await StartListeningAsync();
         }
 
@@ -33,31 +52,61 @@ namespace Renderer
             // Read from stdin in a background thread
             await Task.Run(async () =>
             {
-                using (var reader = new StreamReader(Console.OpenStandardInput(), Encoding.UTF8))
+                try
                 {
-                    while (_isRunning)
+                    using (var reader = new StreamReader(Console.OpenStandardInput(), Encoding.UTF8))
                     {
-                        try
+                        while (_isRunning)
                         {
-                            var line = await reader.ReadLineAsync();
-                            if (string.IsNullOrEmpty(line))
+                            try
                             {
-                                await Task.Delay(100);
-                                continue;
-                            }
+                                var line = await reader.ReadLineAsync();
+                                if (string.IsNullOrEmpty(line))
+                                {
+                                    await Task.Delay(100);
+                                    continue;
+                                }
 
-                            // Parse JSON message
-                            var message = JsonConvert.DeserializeObject<RendererMessage>(line);
-                            if (message != null)
-                            {
-                                await Dispatcher.InvokeAsync(() => ProcessMessage(message));
+                                System.Diagnostics.Debug.WriteLine($"[Renderer] Received message: {line.Substring(0, Math.Min(100, line.Length))}...");
+
+                                // Parse JSON message
+                                var message = JsonConvert.DeserializeObject<RendererMessage>(line);
+                                if (message != null)
+                                {
+                                    System.Diagnostics.Debug.WriteLine($"[Renderer] Parsed message type: {message.Type}");
+                                    
+                                    // Process on UI thread
+                                    await Dispatcher.InvokeAsync(() => 
+                                    {
+                                        try
+                                        {
+                                            ProcessMessage(message);
+                                        }
+                                        catch (Exception ex)
+                                        {
+                                            System.Diagnostics.Debug.WriteLine($"[Renderer] Error in ProcessMessage: {ex.Message}\n{ex.StackTrace}");
+                                            SendError($"ProcessMessage error: {ex.Message}");
+                                        }
+                                    });
+                                }
+                                else
+                                {
+                                    System.Diagnostics.Debug.WriteLine("[Renderer] Failed to parse message");
+                                    SendError("Failed to parse message");
+                                }
                             }
-                        }
-                        catch (Exception ex)
-                        {
-                            SendError(ex.Message);
+                            catch (Exception ex)
+                            {
+                                System.Diagnostics.Debug.WriteLine($"[Renderer] Exception in read loop: {ex.Message}\n{ex.StackTrace}");
+                                SendError($"Read error: {ex.Message}");
+                            }
                         }
                     }
+                }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Debug.WriteLine($"[Renderer] Fatal error in StartListeningAsync: {ex.Message}\n{ex.StackTrace}");
+                    SendError($"Fatal error: {ex.Message}");
                 }
             });
         }
@@ -90,16 +139,23 @@ namespace Renderer
         {
             try
             {
+                System.Diagnostics.Debug.WriteLine($"[Renderer] Starting render, XAML length: {xaml.Length}");
+                
                 // Clear previous content
                 ContentGrid.Children.Clear();
 
                 // Parse and load XAML
+                System.Diagnostics.Debug.WriteLine("[Renderer] Parsing XAML...");
                 var xamlObject = XamlReader.Parse(xaml);
+                
                 if (xamlObject is UIElement element)
                 {
+                    System.Diagnostics.Debug.WriteLine($"[Renderer] XAML parsed successfully, type: {element.GetType().Name}");
+                    
                     ContentGrid.Children.Add(element);
                     
                     // Measure and arrange
+                    System.Diagnostics.Debug.WriteLine("[Renderer] Measuring element...");
                     element.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
                     element.Arrange(new Rect(0, 0, element.DesiredSize.Width, element.DesiredSize.Height));
                     
@@ -109,11 +165,19 @@ namespace Renderer
                     ContentGrid.Width = this.Width;
                     ContentGrid.Height = this.Height;
 
+                    System.Diagnostics.Debug.WriteLine($"[Renderer] Element size: {this.Width}x{this.Height}");
+
                     // Force layout update
+                    System.Diagnostics.Debug.WriteLine("[Renderer] Updating layout...");
                     this.UpdateLayout();
+                    
+                    // Wait a bit for rendering to complete
+                    System.Threading.Thread.Sleep(100);
 
                     // Capture as PNG
+                    System.Diagnostics.Debug.WriteLine("[Renderer] Capturing to PNG...");
                     var pngBytes = CaptureToPng();
+                    System.Diagnostics.Debug.WriteLine($"[Renderer] PNG captured, size: {pngBytes.Length} bytes");
                     
                     // Send response
                     var response = new RendererResponse
@@ -124,15 +188,19 @@ namespace Renderer
                         Height = (int)this.Height
                     };
                     
+                    System.Diagnostics.Debug.WriteLine("[Renderer] Sending response...");
                     SendResponse(response);
+                    System.Diagnostics.Debug.WriteLine("[Renderer] Response sent successfully");
                 }
                 else
                 {
+                    System.Diagnostics.Debug.WriteLine($"[Renderer] Error: XAML root is not UIElement, type: {xamlObject?.GetType().Name ?? "null"}");
                     SendError("XAML root must be a UIElement");
                 }
             }
             catch (Exception ex)
             {
+                System.Diagnostics.Debug.WriteLine($"[Renderer] Exception in RenderXaml: {ex.Message}\n{ex.StackTrace}");
                 SendError($"Render error: {ex.Message}");
             }
         }
@@ -248,9 +316,32 @@ namespace Renderer
 
         private void SendResponse(RendererResponse response)
         {
-            var json = JsonConvert.SerializeObject(response);
-            Console.WriteLine(json);
-            Console.Out.Flush();
+            try
+            {
+                var json = JsonConvert.SerializeObject(response);
+                System.Diagnostics.Debug.WriteLine($"[Renderer] Sending response type: {response.Type}, JSON length: {json.Length}");
+                
+                // Write to stdout and flush immediately
+                Console.Out.WriteLine(json);
+                Console.Out.Flush();
+                
+                // Also try stderr as backup
+                Console.Error.WriteLine($"[DEBUG] Response sent: {response.Type}");
+                Console.Error.Flush();
+                
+                System.Diagnostics.Debug.WriteLine($"[Renderer] Response flushed: {response.Type}");
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"[Renderer] Error sending response: {ex.Message}\n{ex.StackTrace}");
+                // Try to send error via stderr
+                try
+                {
+                    Console.Error.WriteLine($"{{\"type\":\"error\",\"error\":\"Failed to send response: {ex.Message}\"}}");
+                    Console.Error.Flush();
+                }
+                catch { }
+            }
         }
 
         private void SendError(string error)
@@ -289,7 +380,7 @@ namespace Renderer
         public int Height { get; set; }
 
         [JsonProperty("layoutMap")]
-        public LayoutElement LayoutMap { get; set; }
+        public LayoutElement? LayoutMap { get; set; }
 
         [JsonProperty("error")]
         public string Error { get; set; } = "";
@@ -307,7 +398,7 @@ namespace Renderer
         public string Name { get; set; } = "";
 
         [JsonProperty("bounds")]
-        public Bounds Bounds { get; set; }
+        public Bounds? Bounds { get; set; }
 
         [JsonProperty("parentId")]
         public string ParentId { get; set; } = "";
@@ -334,7 +425,7 @@ namespace Renderer
         public double Height { get; set; } = double.NaN;
 
         [JsonProperty("children")]
-        public System.Collections.Generic.List<LayoutElement> Children { get; set; }
+        public System.Collections.Generic.List<LayoutElement>? Children { get; set; }
     }
 
     public class Bounds

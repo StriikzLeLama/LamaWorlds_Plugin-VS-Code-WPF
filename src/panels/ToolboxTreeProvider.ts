@@ -41,6 +41,7 @@ export class ToolboxTreeProvider implements vscode.TreeDataProvider<ToolboxItem>
     }
 
     private getCategories(): ToolboxItem[] {
+        // If searching, show all categories, otherwise show normal categories
         return [
             new ToolboxItem('Standard Controls', 'category', '📦', undefined, 'standard'),
             new ToolboxItem('Layout Panels', 'category', '📐', undefined, 'layout'),
@@ -105,27 +106,6 @@ export class ToolboxTreeProvider implements vscode.TreeDataProvider<ToolboxItem>
         return categoryControls.map(ctrl => 
             new ToolboxItem(ctrl.label, 'control', ctrl.icon, ctrl.id, category, ctrl.description)
         );
-    }
-
-    private getCategories(): ToolboxItem[] {
-        // If searching, show all categories, otherwise show normal categories
-        if (this._searchFilter) {
-            // When searching, show all categories that have matching controls
-            return [
-                new ToolboxItem('Standard Controls', 'category', '📦', undefined, 'standard'),
-                new ToolboxItem('Layout Panels', 'category', '📐', undefined, 'layout'),
-                new ToolboxItem('Lama Worlds Components', 'category', '✨', undefined, 'lamaworlds'),
-                new ToolboxItem('Text & Input', 'category', '📝', undefined, 'input'),
-                new ToolboxItem('Media & Images', 'category', '🖼️', undefined, 'media')
-            ];
-        }
-        return [
-            new ToolboxItem('Standard Controls', 'category', '📦', undefined, 'standard'),
-            new ToolboxItem('Layout Panels', 'category', '📐', undefined, 'layout'),
-            new ToolboxItem('Lama Worlds Components', 'category', '✨', undefined, 'lamaworlds'),
-            new ToolboxItem('Text & Input', 'category', '📝', undefined, 'input'),
-            new ToolboxItem('Media & Images', 'category', '🖼️', undefined, 'media')
-        ];
     }
 }
 

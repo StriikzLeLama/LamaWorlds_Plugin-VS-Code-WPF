@@ -137,26 +137,59 @@ export class XamlPreviewPanel {
      * Initialize preview engine asynchronously with timeout and fallback
      */
     private async _initializePreviewEngine(context: vscode.ExtensionContext): Promise<void> {
+        const startTime = Date.now();
+        let progressStep = 0;
+        
+        // Update progress every 2 seconds
+        const progressInterval = setInterval(() => {
+            progressStep++;
+            const elapsed = Math.floor((Date.now() - startTime) / 1000);
+            let status = 'Initializing preview engine...';
+            let estimatedTime = '';
+            
+            if (elapsed < 5) {
+                status = 'Checking renderer...';
+                estimatedTime = '~2-5 seconds';
+            } else if (elapsed < 30) {
+                status = 'Building renderer (first time only)...';
+                estimatedTime = '~30-60 seconds';
+            } else if (elapsed < 90) {
+                status = 'Building renderer (this may take up to 2 minutes)...';
+                estimatedTime = '~60-120 seconds';
+            } else {
+                status = 'Still building renderer...';
+                estimatedTime = 'Please wait...';
+            }
+            
+            this._panel.webview.html = this._getLoadingHtml(status, elapsed, estimatedTime);
+        }, 2000);
+
         const initTimeout = setTimeout(() => {
+            clearInterval(progressInterval);
             this._panel.webview.html = this._getErrorHtml(
                 'Preview engine initialization is taking longer than expected. ' +
                 'The renderer may need to be built. Please check the Output panel for details.'
             );
-        }, 10000); // 10 second timeout
+        }, 120000); // 2 minutes timeout
 
         try {
             await Promise.race([
                 this._previewEngine.initialize(context),
                 new Promise((_, reject) => 
-                    setTimeout(() => reject(new Error('Initialization timeout')), 30000)
+                    setTimeout(() => reject(new Error('Initialization timeout after 2 minutes')), 120000)
                 )
             ]);
             
+            clearInterval(progressInterval);
             clearTimeout(initTimeout);
+            
+            const elapsed = Math.floor((Date.now() - startTime) / 1000);
+            console.log(`Preview engine initialized in ${elapsed} seconds`);
             
             // Update preview after successful initialization
             await this._update();
         } catch (error: any) {
+            clearInterval(progressInterval);
             clearTimeout(initTimeout);
             console.error('Preview engine initialization error:', error);
             
@@ -395,7 +428,7 @@ export class XamlPreviewPanel {
 </html>`;
     }
 
-    private _getLoadingHtml(): string {
+    private _getLoadingHtml(status: string = 'Initializing preview engine...', elapsed: number = 0, estimatedTime: string = ''): string {
         return `<!DOCTYPE html>
 <html>
 <head>
@@ -410,26 +443,75 @@ export class XamlPreviewPanel {
             justify-content: center;
             height: 100vh;
             margin: 0;
+            flex-direction: column;
+        }
+        .container {
+            text-align: center;
+            max-width: 400px;
         }
         .spinner {
             border: 3px solid #3e3e42;
             border-top: 3px solid #007acc;
             border-radius: 50%;
-            width: 40px;
-            height: 40px;
+            width: 50px;
+            height: 50px;
             animation: spin 1s linear infinite;
-            margin: 0 auto 16px;
+            margin: 0 auto 20px;
         }
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
+        .status {
+            font-size: 16px;
+            margin-bottom: 10px;
+            color: #d4d4d4;
+        }
+        .time-info {
+            font-size: 12px;
+            color: #858585;
+            margin-top: 10px;
+        }
+        .progress-bar {
+            width: 300px;
+            height: 4px;
+            background: #3e3e42;
+            border-radius: 2px;
+            margin: 20px auto;
+            overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #007acc, #00a8ff);
+            animation: progress 2s ease-in-out infinite;
+            width: 60%;
+        }
+        @keyframes progress {
+            0%, 100% { transform: translateX(-100%); }
+            50% { transform: translateX(300%); }
+        }
+        .note {
+            font-size: 11px;
+            color: #858585;
+            margin-top: 20px;
+            font-style: italic;
+        }
     </style>
 </head>
 <body>
-    <div>
+    <div class="container">
         <div class="spinner"></div>
-        <p>Initializing preview engine...</p>
+        <div class="status">${status}</div>
+        <div class="progress-bar">
+            <div class="progress-fill"></div>
+        </div>
+        <div class="time-info">
+            ${elapsed > 0 ? `Elapsed: ${elapsed}s` : ''}
+            ${estimatedTime ? ` | Estimated: ${estimatedTime}` : ''}
+        </div>
+        <div class="note">
+            ${elapsed > 30 ? 'First-time build can take 1-2 minutes. Please wait...' : 'This should only take a few seconds...'}
+        </div>
     </div>
 </body>
 </html>`;

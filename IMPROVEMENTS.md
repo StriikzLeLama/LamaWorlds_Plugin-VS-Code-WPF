@@ -1,4 +1,4 @@
-# 🚀 Idées d'Amélioration pour LamaWorlds WPF Studio PRO
+# 🚀 Idées d'Amélioration pour LamaWorlds WPF Studio
 
 ## ✅ Problèmes Résolus
 

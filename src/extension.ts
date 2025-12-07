@@ -20,13 +20,20 @@ import { AnimationEditorTreeProvider } from './panels/AnimationEditorTreeProvide
 import { ResponsiveDesignTreeProvider } from './panels/ResponsiveDesignTreeProvider';
 import { MarketplaceTreeProvider } from './panels/MarketplaceTreeProvider';
 import { XamlNavigation } from './services/XamlNavigation';
+import { DebugConsole } from './services/DebugConsole';
+import { PerformanceMonitor } from './services/PerformanceMonitor';
 
 /**
  * Main extension entry point
- * LamaWorlds WPF Studio PRO
+ * LamaWorlds WPF Studio
  */
 export function activate(context: vscode.ExtensionContext) {
-    console.log('LamaWorlds WPF Studio PRO is now active!');
+    console.log('LamaWorlds WPF Studio is now active!');
+    
+    // Initialize services
+    const debugConsole = DebugConsole.getInstance();
+    const performanceMonitor = PerformanceMonitor.getInstance();
+    debugConsole.info('LamaWorlds WPF Studio extension activated');
 
     try {
         // Initialize command registry

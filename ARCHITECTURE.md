@@ -1,4 +1,4 @@
-# LamaWorlds WPF Studio PRO - Architecture
+# LamaWorlds WPF Studio - Architecture
 
 ## Folder Structure
 
@@ -84,4 +84,69 @@ extension/
 - ✅ = Created
 - ⏳ = To create
 
-Total files needed: ~50+
+**Dernière mise à jour** : 2025-12-07
+
+### ✅ Fichiers Créés
+
+#### Core
+- ✅ src/extension.ts
+- ✅ src/commands/CommandRegistry.ts
+- ✅ src/utils/PathHelper.ts
+- ✅ src/utils/XamlParser.ts
+- ✅ src/utils/Cache.ts
+- ✅ src/utils/Debouncer.ts
+
+#### Services
+- ✅ src/services/XamlRefactoring.ts
+- ✅ src/services/XamlNavigation.ts
+- ✅ src/services/HotReloadEngine.ts
+- ✅ src/services/DebugConsole.ts
+- ✅ src/services/PerformanceMonitor.ts
+- ✅ src/services/AIService.ts
+
+#### Panels
+- ✅ src/panels/XamlPreviewPanel.ts
+- ✅ src/panels/ToolboxPanel.ts
+- ✅ src/panels/ResourceExplorerPanel.ts
+- ✅ src/panels/DebugInspectorPanel.ts
+- ✅ src/panels/RunPanel.ts
+- ✅ src/panels/AnimationEditorPanel.ts
+- ✅ src/panels/ResponsiveDesignPanel.ts
+- ✅ src/panels/ComponentMarketplacePanel.ts
+- ✅ src/panels/CommandPalettePanel.ts
+
+#### TreeDataProviders
+- ✅ src/panels/CommandTreeProvider.ts
+- ✅ src/panels/ToolboxTreeProvider.ts
+- ✅ src/panels/ResourceExplorerTreeProvider.ts
+- ✅ src/panels/DebugInspectorTreeProvider.ts
+- ✅ src/panels/AnimationEditorTreeProvider.ts
+- ✅ src/panels/ResponsiveDesignTreeProvider.ts
+- ✅ src/panels/MarketplaceTreeProvider.ts
+
+#### Preview Engine
+- ✅ src/preview/previewEngine.ts
+- ✅ preview-engine/renderer/ (projet .NET 8 WPF)
+
+#### Inspector & Interactive
+- ✅ src/inspector/inspectorPanel.ts
+- ✅ src/inspector/treeParser.ts
+- ✅ src/inspector/highlightManager.ts
+- ✅ src/interactive/dragController.ts
+- ✅ src/interactive/resizeController.ts
+
+#### AI & Blend
+- ✅ src/ai/AIFeatures.ts
+- ✅ src/ai/autoLayout.ts
+- ✅ src/ai/autoLayoutPanel.ts
+- ✅ src/blend/blendPanel.ts
+
+#### MVVM
+- ✅ src/mvvm/ProjectCreator.ts
+- ✅ src/mvvm/MvvmTools.ts
+
+### ⚠️ Problèmes Connus
+
+- ⚠️ **Preview Engine Timeout** : Le renderer peut ne pas répondre (voir PREVIEW_ENGINE_TROUBLESHOOTING.md)
+
+Total files created: ~50+

@@ -1,4 +1,4 @@
-# 🚀 LamaWorlds WPF Studio PRO
+# 🚀 LamaWorlds WPF Studio
 
 **The Ultimate Visual Studio-Level WPF Development Extension for VS Code**
 
@@ -46,6 +46,23 @@ An extremely advanced VS Code extension that brings **Visual Studio-level WPF de
 
 ---
 
+## ⚠️ Note Importante - Preview Engine
+
+Le preview engine utilise un renderer WPF .NET 8 qui communique via stdin/stdout. 
+
+**Temps d'initialisation** :
+- **Première utilisation** : 1-2 minutes (build du renderer)
+- **Utilisations suivantes** : 2-5 secondes
+
+**Si vous voyez "Render timeout"** :
+- Vérifiez que .NET 8 SDK est installé
+- Consultez le Debug Inspector pour les logs détaillés
+- Le fallback affiche un placeholder si le renderer ne répond pas
+
+Voir [PREVIEW_ENGINE_TROUBLESHOOTING.md](PREVIEW_ENGINE_TROUBLESHOOTING.md) pour plus de détails.
+
+---
+
 ## 📦 Installation
 
 ### Option 1: Development Mode
@@ -53,7 +70,7 @@ An extremely advanced VS Code extension that brings **Visual Studio-level WPF de
 ```bash
 # Clone the repository
 git clone <repository-url>
-cd lamaworlds-wpf-studio-pro
+cd lamaworlds-wpf-studio
 
 # Install dependencies
 npm install
@@ -404,7 +421,7 @@ Add to your `settings.json`:
 ## 📁 Project Structure
 
 ```
-lamaworlds-wpf-studio-pro/
+lamaworlds-wpf-studio/
 ├── src/
 │   ├── extension.ts              # Main entry point
 │   ├── panels/                   # WebView panels
@@ -594,7 +611,7 @@ MIT License - Free and open-source forever
 
 ## 🌟 Features Comparison
 
-| Feature | Visual Studio | Lama Worlds WPF Studio PRO |
+| Feature | Visual Studio | Lama Worlds WPF Studio |
 |---------|--------------|---------------------------|
 | XAML Designer | ✅ | ✅ (Interactive Designer) |
 | Drag & Drop | ✅ | ✅ (Enhanced) |

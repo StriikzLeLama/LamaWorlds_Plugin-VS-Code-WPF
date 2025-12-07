@@ -1,5 +1,7 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
+import { DebugConsole } from '../services/DebugConsole';
+import { PerformanceMonitor } from '../services/PerformanceMonitor';
 
 export class DebugInspectorPanel {
     public static currentPanel: DebugInspectorPanel | undefined;
@@ -8,10 +10,14 @@ export class DebugInspectorPanel {
     private readonly _extensionUri: vscode.Uri;
     private _disposables: vscode.Disposable[] = [];
     private _visualTree: any = null;
+    private _debugConsole: DebugConsole;
+    private _performanceMonitor: PerformanceMonitor;
 
     private constructor(panel: vscode.WebviewPanel, extensionUri: vscode.Uri) {
         this._panel = panel;
         this._extensionUri = extensionUri;
+        this._debugConsole = DebugConsole.getInstance();
+        this._performanceMonitor = PerformanceMonitor.getInstance();
 
         this._update();
         this._panel.onDidDispose(() => this.dispose(), null, this._disposables);
@@ -25,11 +31,29 @@ export class DebugInspectorPanel {
                     case 'refresh':
                         await this._update();
                         return;
+                    case 'clearLogs':
+                        this._debugConsole.clear();
+                        await this._update();
+                        return;
+                    case 'showPerformance':
+                        this._performanceMonitor.showReport();
+                        return;
+                    case 'exportLogs':
+                        await this._exportLogs();
+                        return;
                 }
             },
             null,
             this._disposables
         );
+
+        // Listen to debug console updates
+        const interval = setInterval(() => {
+            if (this._panel.visible) {
+                this._update();
+            }
+        }, 2000);
+        this._disposables.push({ dispose: () => clearInterval(interval) });
     }
 
     public static createOrShow(extensionUri: vscode.Uri) {
@@ -141,7 +165,25 @@ export class DebugInspectorPanel {
         return attrs;
     }
 
+    private async _exportLogs(): Promise<void> {
+        const logs = this._debugConsole.getLogs();
+        const content = logs.map(log => 
+            `[${log.timestamp.toISOString()}] [${log.level.toUpperCase()}] ${log.message}`
+        ).join('\n');
+        
+        const doc = await vscode.workspace.openTextDocument({
+            content,
+            language: 'plaintext'
+        });
+        await vscode.window.showTextDocument(doc);
+    }
+
     private _render() {
+        const logs = this._debugConsole.getLogs().slice(-50); // Last 50 logs
+        const errorCount = this._debugConsole.getErrorCount();
+        const warningCount = this._debugConsole.getWarningCount();
+        const perfStats = this._performanceMonitor.getStats('renderFastLive');
+
         if (!this._visualTree) {
             this._panel.webview.html = `<!DOCTYPE html>
 <html>
@@ -163,6 +205,16 @@ export class DebugInspectorPanel {
         }
 
         const treeHtml = this._renderTree(this._visualTree);
+        const logsHtml = this._renderLogs(logs);
+        const statsHtml = perfStats ? `
+            <div class="stats-section">
+                <h3>Performance Stats</h3>
+                <div class="stat-item">Average: ${perfStats.avg.toFixed(2)}ms</div>
+                <div class="stat-item">Min: ${perfStats.min}ms</div>
+                <div class="stat-item">Max: ${perfStats.max}ms</div>
+                <div class="stat-item">Count: ${perfStats.count}</div>
+            </div>
+        ` : '<p>No performance data available</p>';
 
         this._panel.webview.html = `<!DOCTYPE html>
 <html>
@@ -230,11 +282,39 @@ export class DebugInspectorPanel {
     </style>
 </head>
 <body>
-    <h2>Visual Tree Explorer</h2>
-    <div id="tree-container">${treeHtml}</div>
-    <div id="properties-panel" class="properties-panel" style="display: none;">
-        <h3>Properties</h3>
-        <div id="properties-content"></div>
+    <div class="header">
+        <h2>Debug Inspector</h2>
+        <div class="toolbar">
+            <button id="refreshBtn" class="btn">🔄 Refresh</button>
+            <button id="clearLogsBtn" class="btn">🗑️ Clear Logs</button>
+            <button id="perfBtn" class="btn">⚡ Performance</button>
+            <button id="exportBtn" class="btn">💾 Export Logs</button>
+        </div>
+    </div>
+    <div class="stats-bar">
+        <span class="stat-badge error">Errors: ${errorCount}</span>
+        <span class="stat-badge warn">Warnings: ${warningCount}</span>
+        <span class="stat-badge info">Total Logs: ${logs.length}</span>
+    </div>
+    <div class="tabs">
+        <button class="tab active" data-tab="tree">Visual Tree</button>
+        <button class="tab" data-tab="logs">Debug Console</button>
+        <button class="tab" data-tab="performance">Performance</button>
+    </div>
+    <div id="tree-tab" class="tab-content active">
+        <div id="tree-container">${treeHtml}</div>
+        <div id="properties-panel" class="properties-panel" style="display: none;">
+            <h3>Properties</h3>
+            <div id="properties-content"></div>
+        </div>
+    </div>
+    <div id="logs-tab" class="tab-content">
+        <div class="console-container">
+            ${logsHtml}
+        </div>
+    </div>
+    <div id="performance-tab" class="tab-content">
+        ${statsHtml || '<p>No performance data available</p>'}
     </div>
     <script>
         const vscode = acquireVsCodeApi();
@@ -277,6 +357,31 @@ export class DebugInspectorPanel {
                 });
             });
         });
+
+        // Tab switching
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                tab.classList.add('active');
+                const tabName = tab.getAttribute('data-tab');
+                document.getElementById(tabName + '-tab')?.classList.add('active');
+            });
+        });
+
+        // Toolbar buttons
+        document.getElementById('refreshBtn')?.addEventListener('click', () => {
+            vscode.postMessage({ command: 'refresh' });
+        });
+        document.getElementById('clearLogsBtn')?.addEventListener('click', () => {
+            vscode.postMessage({ command: 'clearLogs' });
+        });
+        document.getElementById('perfBtn')?.addEventListener('click', () => {
+            vscode.postMessage({ command: 'showPerformance' });
+        });
+        document.getElementById('exportBtn')?.addEventListener('click', () => {
+            vscode.postMessage({ command: 'exportLogs' });
+        });
     </script>
 </body>
 </html>`;
@@ -311,9 +416,35 @@ export class DebugInspectorPanel {
         return html;
     }
 
+    private _renderLogs(logs: Array<{ timestamp: Date; level: string; message: string }>): string {
+        if (logs.length === 0) {
+            return '<p style="padding: 20px; color: var(--vscode-descriptionForeground);">No logs yet</p>';
+        }
+
+        return logs.map(log => {
+            const time = log.timestamp.toLocaleTimeString();
+            return `
+                <div class="log-entry ${log.level}">
+                    <span class="log-time">[${time}]</span>
+                    <span class="log-level">[${log.level.toUpperCase()}]</span>
+                    <span>${this._escapeHtml(log.message)}</span>
+                </div>
+            `;
+        }).join('');
+    }
+
+    private _escapeHtml(text: string): string {
+        // Simple HTML escaping for Node.js
+        return text
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#039;');
+    }
+
     private async _selectElement(elementId: string) {
         // Highlight element in preview (if available)
-        // This would communicate with the preview panel
-        console.log('Selected element:', elementId);
+        this._debugConsole.debug(`Selected element: ${elementId}`);
     }
 }

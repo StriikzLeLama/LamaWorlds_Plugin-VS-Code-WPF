@@ -72,11 +72,43 @@ If you see TypeScript errors about missing modules:
 - Check that you're in a WPF project folder
 - Verify the `.csproj` file exists
 
-### Preview Not Showing
+### Preview Not Showing / Timeout
 
-- Ensure a `.xaml` file is open
-- Check that the file is a valid XAML file
-- Try manually opening the preview: `Lama Worlds: Open XAML Preview`
+**Symptômes** :
+- "Render timeout, using fallback" dans les logs
+- Preview reste sur "Initializing preview engine..."
+
+**Solutions** :
+
+1. **Vérifier .NET SDK** :
+   ```powershell
+   dotnet --version
+   ```
+   Doit afficher `8.x.x` ou supérieur.
+
+2. **Rebuild le renderer** :
+   - Supprimez `preview-engine/renderer/bin/`
+   - Rechargez l'extension (F5)
+   - Le renderer sera rebuild automatiquement
+
+3. **Vérifier les logs** :
+   - Ouvrez Debug Inspector (`Lama Worlds: Open Debug Inspector`)
+   - Onglet "Debug Console" pour voir les logs détaillés
+   - Cherchez les messages `[INFO]`, `[WARN]`, `[ERROR]`
+
+4. **Tester le renderer manuellement** :
+   ```powershell
+   cd preview-engine/renderer
+   dotnet run
+   ```
+   Le renderer devrait démarrer et attendre des commandes.
+
+**Temps d'attente normaux** :
+- **Première fois** : 1-2 minutes (build du renderer)
+- **Utilisations suivantes** : 2-5 secondes
+- **Timeout** : 10 secondes si pas de réponse
+
+**Note** : Si le timeout persiste, le fallback affiche un placeholder. Le preview fonctionne mais sans rendu réel.
 
 ## Building from Source
 

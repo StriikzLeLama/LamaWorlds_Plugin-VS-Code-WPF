@@ -239,7 +239,7 @@ export class CommandPalettePanel {
 </head>
 <body>
     <div class="header">
-        <h1>🚀 Lama Worlds WPF Studio PRO</h1>
+        <h1>🚀 Lama Worlds WPF Studio</h1>
         <p>Quick Access to All Commands</p>
     </div>
     

@@ -1,4 +1,4 @@
-# Complete File List - LamaWorlds WPF Studio PRO
+# Complete File List - LamaWorlds WPF Studio
 
 ## ✅ Created Files
 

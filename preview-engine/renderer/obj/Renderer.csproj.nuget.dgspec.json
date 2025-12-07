@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "l:\\Logiciel\\Visual Studio 2022\\VS Studio Project\\Plugin-VS-Code-WPF\\preview-engine\\renderer\\Renderer.csproj": {}
+    "L:\\Logiciel\\Visual Studio 2022\\VS Studio Project\\Plugin-VS-Code-WPF\\preview-engine\\renderer\\Renderer.csproj": {}
   },
   "projects": {
-    "l:\\Logiciel\\Visual Studio 2022\\VS Studio Project\\Plugin-VS-Code-WPF\\preview-engine\\renderer\\Renderer.csproj": {
+    "L:\\Logiciel\\Visual Studio 2022\\VS Studio Project\\Plugin-VS-Code-WPF\\preview-engine\\renderer\\Renderer.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "l:\\Logiciel\\Visual Studio 2022\\VS Studio Project\\Plugin-VS-Code-WPF\\preview-engine\\renderer\\Renderer.csproj",
+        "projectUniqueName": "L:\\Logiciel\\Visual Studio 2022\\VS Studio Project\\Plugin-VS-Code-WPF\\preview-engine\\renderer\\Renderer.csproj",
         "projectName": "renderer",
-        "projectPath": "l:\\Logiciel\\Visual Studio 2022\\VS Studio Project\\Plugin-VS-Code-WPF\\preview-engine\\renderer\\Renderer.csproj",
+        "projectPath": "L:\\Logiciel\\Visual Studio 2022\\VS Studio Project\\Plugin-VS-Code-WPF\\preview-engine\\renderer\\Renderer.csproj",
         "packagesPath": "C:\\Users\\cypri\\.nuget\\packages\\",
-        "outputPath": "l:\\Logiciel\\Visual Studio 2022\\VS Studio Project\\Plugin-VS-Code-WPF\\preview-engine\\renderer\\obj\\",
+        "outputPath": "L:\\Logiciel\\Visual Studio 2022\\VS Studio Project\\Plugin-VS-Code-WPF\\preview-engine\\renderer\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "L:\\Logiciel\\Visual Studio 2022\\SDK\\NuGetPackages"

@@ -1,6 +1,6 @@
 {
     "name": "lamaworlds-wpf-studio-pro",
-    "displayName": "LamaWorlds WPF Studio Pro",
+    "displayName": "LamaWorlds WPF Studio",
     "description": "Advanced WPF development extension with Visual Studio-level features: XAML Designer, Live Preview, MVVM Tools, Debug Inspector, and more.",
     "version": "1.0.0",
     "publisher": "lamaworlds",
