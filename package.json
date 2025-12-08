@@ -236,6 +236,104 @@
                 "title": "Lama Worlds: Remove NuGet Package",
                 "icon": "$(trash)",
                 "category": "Lama Worlds"
+            },
+            {
+                "command": "lamaworlds.openStyleEditor",
+                "title": "Lama Worlds: Open Style Editor",
+                "icon": "$(symbol-color)",
+                "category": "Lama Worlds"
+            },
+            {
+                "command": "lamaworlds.openPerformanceProfiler",
+                "title": "Lama Worlds: Open Performance Profiler",
+                "icon": "$(graph)",
+                "category": "Lama Worlds"
+            },
+            {
+                "command": "lamaworlds.openBindingDebugger",
+                "title": "Lama Worlds: Open Binding Debugger",
+                "icon": "$(debug-breakpoint)",
+                "category": "Lama Worlds"
+            },
+            {
+                "command": "lamaworlds.convertToMvvm",
+                "title": "Lama Worlds: Convert to MVVM",
+                "icon": "$(symbol-class)",
+                "category": "Lama Worlds"
+            },
+            {
+                "command": "lamaworlds.aiRefactorXaml",
+                "title": "Lama Worlds: AI Refactor XAML",
+                "icon": "$(tools)",
+                "category": "Lama Worlds"
+            },
+            {
+                "command": "lamaworlds.distributeHorizontally",
+                "title": "Lama Worlds: Distribute Horizontally",
+                "category": "Lama Worlds"
+            },
+            {
+                "command": "lamaworlds.distributeVertically",
+                "title": "Lama Worlds: Distribute Vertically",
+                "category": "Lama Worlds"
+            },
+            {
+                "command": "lamaworlds.generateGrid",
+                "title": "Lama Worlds: Generate Grid Layout",
+                "icon": "$(layout)",
+                "category": "Lama Worlds"
+            },
+            {
+                "command": "lamaworlds.openAccessibilityChecker",
+                "title": "Lama Worlds: Open Accessibility Checker",
+                "icon": "$(checklist)",
+                "category": "Lama Worlds"
+            },
+            {
+                "command": "lamaworlds.openNavigationGraph",
+                "title": "Lama Worlds: Open Navigation Graph",
+                "icon": "$(graph)",
+                "category": "Lama Worlds"
+            },
+            {
+                "command": "lamaworlds.convertToAvalonia",
+                "title": "Lama Worlds: Convert WPF to Avalonia",
+                "category": "Lama Worlds"
+            },
+            {
+                "command": "lamaworlds.convertToMaui",
+                "title": "Lama Worlds: Convert WPF to MAUI",
+                "category": "Lama Worlds"
+            },
+            {
+                "command": "lamaworlds.convertToWinUI",
+                "title": "Lama Worlds: Convert WPF to WinUI 3",
+                "category": "Lama Worlds"
+            },
+            {
+                "command": "lamaworlds.checkAccessibility",
+                "title": "Lama Worlds: Check Accessibility",
+                "category": "Lama Worlds"
+            },
+            {
+                "command": "lamaworlds.inspectBindings",
+                "title": "Lama Worlds: Inspect Bindings",
+                "category": "Lama Worlds"
+            },
+            {
+                "command": "lamaworlds.openThemeManager",
+                "title": "Lama Worlds: Open Theme Manager",
+                "category": "Lama Worlds"
+            },
+            {
+                "command": "lamaworlds.showDebugConsole",
+                "title": "Lama Worlds: Show Debug Console",
+                "category": "Lama Worlds"
+            },
+            {
+                "command": "lamaworlds.exportLogs",
+                "title": "Lama Worlds: Export Logs",
+                "category": "Lama Worlds"
             }
         ],
         "views": {

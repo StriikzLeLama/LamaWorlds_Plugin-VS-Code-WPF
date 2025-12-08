@@ -27,19 +27,40 @@ import { AutoRestore } from './nuget/autoRestore';
 import { ProjectScanner } from './nuget/projectScanner';
 import { NuGetRestore } from './nuget/restore';
 import { NuGetManager } from './nuget/manager';
+import { StyleEditorPanel } from './panels/StyleEditorPanel';
+import { PerformanceProfilerPanel } from './panels/PerformanceProfilerPanel';
+import { BindingDebuggerPanel } from './panels/BindingDebuggerPanel';
+import { AccessibilityCheckerPanel } from './panels/AccessibilityCheckerPanel';
+import { NavigationGraphPanel } from './panels/NavigationGraphPanel';
+import { MvvmWizard } from './mvvm/wizard';
+import { XamlRefactor } from './ai/xamlRefactor';
+import { GridGenerator } from './designer/gridGenerator/gridGenerator';
+import { SnappingEngine } from './designer/snapping/snappingEngine';
+import { BindingInspector } from './bindings/bindingInspector';
+import { AccessibilityChecker } from './accessibility/checker';
+import { GraphBuilder } from './navigation/graphBuilder';
+import { WpfToAvaloniaConverter } from './converters/wpfToAvalonia';
+import { WpfToMauiConverter } from './converters/wpfToMaui';
+import { WpfToWinUI3Converter } from './converters/wpfToWinUI';
+import { ThemeManagerPanel } from './panels/ThemeManagerPanel';
 
 /**
  * Main extension entry point
  * LamaWorlds WPF Studio
  */
 export function activate(context: vscode.ExtensionContext) {
-    console.log('LamaWorlds WPF Studio is now active!');
-    
-    // Initialize services
+    // Initialize services FIRST
     const debugConsole = DebugConsole.getInstance();
     const performanceMonitor = PerformanceMonitor.getInstance();
-    debugConsole.info('LamaWorlds WPF Studio extension activated');
-
+    
+    const initTime = debugConsole.time('Extension Activation', 'Initialization');
+    
+    debugConsole.info('LamaWorlds WPF Studio extension activation started', 'Initialization', {
+        extensionId: context.extension.id,
+        extensionPath: context.extensionPath,
+        workspaceFolders: vscode.workspace.workspaceFolders?.length || 0
+    });
+    
     try {
         // Initialize command registry
         CommandRegistry.initialize(context);
@@ -48,7 +69,9 @@ export function activate(context: vscode.ExtensionContext) {
         const commandDisposables = CommandRegistry.registerCommands(context);
         context.subscriptions.push(...commandDisposables);
     } catch (error: any) {
-        console.error('Error initializing CommandRegistry:', error);
+        debugConsole.error('Error initializing CommandRegistry', error, 'CommandRegistry', {
+            extensionPath: context.extensionPath
+        });
         vscode.window.showErrorMessage(`Failed to initialize Lama Worlds WPF Studio: ${error?.message || error}`);
     }
 
@@ -103,7 +126,9 @@ export function activate(context: vscode.ExtensionContext) {
         });
         context.subscriptions.push(marketplaceTreeView);
     } catch (error: any) {
-        console.error('Error creating Tree Views:', error);
+        debugConsole.error('Error creating Tree Views', error, 'TreeViews', {
+            workspaceFolders: vscode.workspace.workspaceFolders?.length || 0
+        });
         vscode.window.showErrorMessage(`Failed to initialize sidebar views: ${error?.message || error}`);
     }
 
@@ -113,7 +138,7 @@ export function activate(context: vscode.ExtensionContext) {
             try {
                 XamlPreviewPanel.createOrShow(context.extensionUri, context, { auto: false });
             } catch (error: any) {
-                console.error('Error opening XAML Preview:', error);
+                debugConsole.error('Error opening XAML Preview', error, 'XamlPreviewPanel');
                 vscode.window.showErrorMessage(`Failed to open XAML Preview: ${error?.message || error}`);
             }
         }),
@@ -121,7 +146,7 @@ export function activate(context: vscode.ExtensionContext) {
             try {
                 ToolboxPanel.createOrShow(context.extensionUri);
             } catch (error: any) {
-                console.error('Error opening Toolbox:', error);
+                debugConsole.error('Error opening Toolbox', error, 'ToolboxPanel');
                 vscode.window.showErrorMessage(`Failed to open Toolbox: ${error?.message || error}`);
             }
         }),
@@ -129,7 +154,7 @@ export function activate(context: vscode.ExtensionContext) {
             try {
                 ResourceExplorerPanel.createOrShow(context.extensionUri);
             } catch (error: any) {
-                console.error('Error opening Resource Explorer:', error);
+                debugConsole.error('Error opening Resource Explorer', error, 'ResourceExplorerPanel');
                 vscode.window.showErrorMessage(`Failed to open Resource Explorer: ${error?.message || error}`);
             }
         }),
@@ -137,7 +162,7 @@ export function activate(context: vscode.ExtensionContext) {
             try {
                 DebugInspectorPanel.createOrShow(context.extensionUri);
             } catch (error: any) {
-                console.error('Error opening Debug Inspector:', error);
+                debugConsole.error('Error opening Debug Inspector', error, 'DebugInspectorPanel');
                 vscode.window.showErrorMessage(`Failed to open Debug Inspector: ${error?.message || error}`);
             }
         }),
@@ -145,7 +170,7 @@ export function activate(context: vscode.ExtensionContext) {
             try {
                 RunPanel.createOrShow(context.extensionUri);
             } catch (error: any) {
-                console.error('Error opening Run Panel:', error);
+                debugConsole.error('Error opening Run Panel', error, 'RunPanel');
                 vscode.window.showErrorMessage(`Failed to open Run Panel: ${error?.message || error}`);
             }
         }),
@@ -153,7 +178,7 @@ export function activate(context: vscode.ExtensionContext) {
             try {
                 AnimationEditorPanel.createOrShow(context.extensionUri);
             } catch (error: any) {
-                console.error('Error opening Animation Editor:', error);
+                debugConsole.error('Error opening Animation Editor', error, 'AnimationEditorPanel');
                 vscode.window.showErrorMessage(`Failed to open Animation Editor: ${error?.message || error}`);
             }
         }),
@@ -161,7 +186,7 @@ export function activate(context: vscode.ExtensionContext) {
             try {
                 ResponsiveDesignPanel.createOrShow(context.extensionUri);
             } catch (error: any) {
-                console.error('Error opening Responsive Design:', error);
+                debugConsole.error('Error opening Responsive Design', error, 'ResponsiveDesignPanel');
                 vscode.window.showErrorMessage(`Failed to open Responsive Design: ${error?.message || error}`);
             }
         }),
@@ -169,7 +194,7 @@ export function activate(context: vscode.ExtensionContext) {
             try {
                 ComponentMarketplacePanel.createOrShow(context.extensionUri);
             } catch (error: any) {
-                console.error('Error opening Marketplace:', error);
+                debugConsole.error('Error opening Marketplace', error, 'MarketplacePanel');
                 vscode.window.showErrorMessage(`Failed to open Marketplace: ${error?.message || error}`);
             }
         }),
@@ -177,7 +202,7 @@ export function activate(context: vscode.ExtensionContext) {
             try {
                 await RunPanel.buildProject();
             } catch (error: any) {
-                console.error('Error building project:', error);
+                debugConsole.error('Error building project', error, 'RunPanel');
                 vscode.window.showErrorMessage(`Failed to build project: ${error?.message || error}`);
             }
         }),
@@ -185,7 +210,7 @@ export function activate(context: vscode.ExtensionContext) {
             try {
                 await RunPanel.runProject();
             } catch (error: any) {
-                console.error('Error running project:', error);
+                debugConsole.error('Error running project', error, 'RunPanel');
                 vscode.window.showErrorMessage(`Failed to run project: ${error?.message || error}`);
             }
         }),
@@ -197,7 +222,7 @@ export function activate(context: vscode.ExtensionContext) {
                 }
                 await ToolboxPanel.insertControl(controlType);
             } catch (error: any) {
-                console.error('Error inserting control:', error);
+                debugConsole.error('Error inserting control', error, 'ToolboxPanel');
                 vscode.window.showErrorMessage(`Failed to insert control: ${error?.message || error}`);
             }
         }),
@@ -205,7 +230,7 @@ export function activate(context: vscode.ExtensionContext) {
             try {
                 InspectorPanel.createOrShow(context.extensionUri);
             } catch (error: any) {
-                console.error('Error opening Visual Tree Inspector:', error);
+                debugConsole.error('Error opening Visual Tree Inspector', error, 'InspectorPanel');
                 vscode.window.showErrorMessage(`Failed to open Visual Tree Inspector: ${error?.message || error}`);
             }
         }),
@@ -213,7 +238,7 @@ export function activate(context: vscode.ExtensionContext) {
             try {
                 AutoLayoutPanel.createOrShow(context.extensionUri);
             } catch (error: any) {
-                console.error('Error opening Auto Layout:', error);
+                debugConsole.error('Error opening Auto Layout', error, 'AutoLayoutPanel');
                 vscode.window.showErrorMessage(`Failed to open Auto Layout: ${error?.message || error}`);
             }
         }),
@@ -221,7 +246,7 @@ export function activate(context: vscode.ExtensionContext) {
             try {
                 BlendPanel.createOrShow(context.extensionUri);
             } catch (error: any) {
-                console.error('Error opening Visual States:', error);
+                debugConsole.error('Error opening Visual States', error, 'BlendPanel');
                 vscode.window.showErrorMessage(`Failed to open Visual States: ${error?.message || error}`);
             }
         }),
@@ -229,7 +254,7 @@ export function activate(context: vscode.ExtensionContext) {
             try {
                 CommandPalettePanel.createOrShow(context.extensionUri, context);
             } catch (error: any) {
-                console.error('Error opening Command Palette:', error);
+                debugConsole.error('Error opening Command Palette', error, 'CommandPalettePanel');
                 vscode.window.showErrorMessage(`Failed to open Command Palette: ${error?.message || error}`);
             }
         }),
@@ -237,20 +262,21 @@ export function activate(context: vscode.ExtensionContext) {
             try {
                 NuGetPanel.createOrShow(context.extensionUri, context);
             } catch (error: any) {
-                console.error('Error opening NuGet Manager:', error);
+                debugConsole.error('Error opening NuGet Manager', error, 'NuGetPanel');
                 vscode.window.showErrorMessage(`Failed to open NuGet Manager: ${error?.message || error}`);
             }
         }),
         vscode.commands.registerCommand('lamaworlds.restoreNuGetPackages', async () => {
+            let csprojPath: string | null = null;
             try {
-                const csprojPath = await ProjectScanner.findNearestCsproj();
+                csprojPath = await ProjectScanner.findNearestCsproj();
                 if (!csprojPath) {
                     vscode.window.showErrorMessage('No .csproj file found. Please open a project file.');
                     return;
                 }
                 await NuGetRestore.runRestoreWithNotification(csprojPath);
             } catch (error: any) {
-                console.error('Error restoring NuGet packages:', error);
+                debugConsole.error('Error restoring NuGet packages', error, 'NuGetRestore', { csprojPath });
                 vscode.window.showErrorMessage(`Failed to restore packages: ${error?.message || error}`);
             }
         }),
@@ -331,6 +357,206 @@ export function activate(context: vscode.ExtensionContext) {
                 console.error('Error removing NuGet package:', error);
                 vscode.window.showErrorMessage(`Failed to remove package: ${error?.message || error}`);
             }
+        }),
+        vscode.commands.registerCommand('lamaworlds.openStyleEditor', () => {
+            try {
+                StyleEditorPanel.createOrShow(context.extensionUri, context);
+            } catch (error: any) {
+                console.error('Error opening Style Editor:', error);
+                vscode.window.showErrorMessage(`Failed to open Style Editor: ${error?.message || error}`);
+            }
+        }),
+        vscode.commands.registerCommand('lamaworlds.openPerformanceProfiler', () => {
+            try {
+                PerformanceProfilerPanel.createOrShow(context.extensionUri, context);
+            } catch (error: any) {
+                console.error('Error opening Performance Profiler:', error);
+                vscode.window.showErrorMessage(`Failed to open Performance Profiler: ${error?.message || error}`);
+            }
+        }),
+        vscode.commands.registerCommand('lamaworlds.openBindingDebugger', () => {
+            try {
+                BindingDebuggerPanel.createOrShow(context.extensionUri, context);
+            } catch (error: any) {
+                console.error('Error opening Binding Debugger:', error);
+                vscode.window.showErrorMessage(`Failed to open Binding Debugger: ${error?.message || error}`);
+            }
+        }),
+        vscode.commands.registerCommand('lamaworlds.convertToMvvm', async () => {
+            try {
+                const editor = vscode.window.activeTextEditor;
+                if (!editor || !editor.document.fileName.endsWith('.xaml')) {
+                    vscode.window.showErrorMessage('Please open a XAML file first');
+                    return;
+                }
+                await MvvmWizard.convertToMvvm(editor.document);
+            } catch (error: any) {
+                console.error('Error converting to MVVM:', error);
+                vscode.window.showErrorMessage(`Failed to convert to MVVM: ${error?.message || error}`);
+            }
+        }),
+        vscode.commands.registerCommand('lamaworlds.aiRefactorXaml', async () => {
+            try {
+                const editor = vscode.window.activeTextEditor;
+                if (!editor || !editor.document.fileName.endsWith('.xaml')) {
+                    vscode.window.showErrorMessage('Please open a XAML file first');
+                    return;
+                }
+                const refactored = await XamlRefactor.simplifyXaml(editor.document);
+                const edit = new vscode.WorkspaceEdit();
+                const fullRange = new vscode.Range(
+                    editor.document.positionAt(0),
+                    editor.document.positionAt(editor.document.getText().length)
+                );
+                edit.replace(editor.document.uri, fullRange, refactored);
+                await vscode.workspace.applyEdit(edit);
+                vscode.window.showInformationMessage('XAML refactored successfully');
+            } catch (error: any) {
+                console.error('Error refactoring XAML:', error);
+                vscode.window.showErrorMessage(`Failed to refactor XAML: ${error?.message || error}`);
+            }
+        }),
+        vscode.commands.registerCommand('lamaworlds.distributeHorizontally', async () => {
+            try {
+                vscode.window.showInformationMessage('Distribute Horizontally - Feature coming soon');
+            } catch (error: any) {
+                console.error('Error distributing horizontally:', error);
+                vscode.window.showErrorMessage(`Failed to distribute: ${error?.message || error}`);
+            }
+        }),
+        vscode.commands.registerCommand('lamaworlds.distributeVertically', async () => {
+            try {
+                vscode.window.showInformationMessage('Distribute Vertically - Feature coming soon');
+            } catch (error: any) {
+                console.error('Error distributing vertically:', error);
+                vscode.window.showErrorMessage(`Failed to distribute: ${error?.message || error}`);
+            }
+        }),
+        vscode.commands.registerCommand('lamaworlds.generateGrid', async () => {
+            try {
+                vscode.window.showInformationMessage('Generate Grid - Feature coming soon');
+            } catch (error: any) {
+                console.error('Error generating grid:', error);
+                vscode.window.showErrorMessage(`Failed to generate grid: ${error?.message || error}`);
+            }
+        }),
+        vscode.commands.registerCommand('lamaworlds.openAccessibilityChecker', () => {
+            try {
+                AccessibilityCheckerPanel.createOrShow(context.extensionUri, context);
+            } catch (error: any) {
+                console.error('Error opening Accessibility Checker:', error);
+                vscode.window.showErrorMessage(`Failed to open Accessibility Checker: ${error?.message || error}`);
+            }
+        }),
+        vscode.commands.registerCommand('lamaworlds.openNavigationGraph', async () => {
+            try {
+                NavigationGraphPanel.createOrShow(context.extensionUri, context);
+                const workspaceFolder = vscode.workspace.workspaceFolders?.[0];
+                if (workspaceFolder) {
+                    const graph = await GraphBuilder.buildGraph(workspaceFolder);
+                    NavigationGraphPanel.currentPanel?.updateGraph(graph.nodes, graph.edges);
+                }
+            } catch (error: any) {
+                console.error('Error opening Navigation Graph:', error);
+                vscode.window.showErrorMessage(`Failed to open Navigation Graph: ${error?.message || error}`);
+            }
+        }),
+        vscode.commands.registerCommand('lamaworlds.convertToAvalonia', async () => {
+            try {
+                const editor = vscode.window.activeTextEditor;
+                if (!editor || !editor.document.fileName.endsWith('.xaml')) {
+                    vscode.window.showErrorMessage('Please open a XAML file first');
+                    return;
+                }
+                const converted = await WpfToAvaloniaConverter.convert(editor.document);
+                const doc = await vscode.workspace.openTextDocument({
+                    content: converted,
+                    language: 'xml'
+                });
+                await vscode.window.showTextDocument(doc);
+                vscode.window.showInformationMessage('Converted to Avalonia XAML');
+            } catch (error: any) {
+                console.error('Error converting to Avalonia:', error);
+                vscode.window.showErrorMessage(`Failed to convert: ${error?.message || error}`);
+            }
+        }),
+        vscode.commands.registerCommand('lamaworlds.convertToMaui', async () => {
+            try {
+                const editor = vscode.window.activeTextEditor;
+                if (!editor || !editor.document.fileName.endsWith('.xaml')) {
+                    vscode.window.showErrorMessage('Please open a XAML file first');
+                    return;
+                }
+                const converted = await WpfToMauiConverter.convert(editor.document);
+                const doc = await vscode.workspace.openTextDocument({
+                    content: converted,
+                    language: 'xml'
+                });
+                await vscode.window.showTextDocument(doc);
+                vscode.window.showInformationMessage('Converted to MAUI XAML');
+            } catch (error: any) {
+                console.error('Error converting to MAUI:', error);
+                vscode.window.showErrorMessage(`Failed to convert: ${error?.message || error}`);
+            }
+        }),
+        vscode.commands.registerCommand('lamaworlds.convertToWinUI', async () => {
+            try {
+                const editor = vscode.window.activeTextEditor;
+                if (!editor || !editor.document.fileName.endsWith('.xaml')) {
+                    vscode.window.showErrorMessage('Please open a XAML file first');
+                    return;
+                }
+                const converted = await WpfToWinUI3Converter.convert(editor.document);
+                const doc = await vscode.workspace.openTextDocument({
+                    content: converted,
+                    language: 'xml'
+                });
+                await vscode.window.showTextDocument(doc);
+                vscode.window.showInformationMessage('Converted to WinUI 3 XAML');
+            } catch (error: any) {
+                console.error('Error converting to WinUI:', error);
+                vscode.window.showErrorMessage(`Failed to convert: ${error?.message || error}`);
+            }
+        }),
+        vscode.commands.registerCommand('lamaworlds.checkAccessibility', async () => {
+            try {
+                const editor = vscode.window.activeTextEditor;
+                if (!editor || !editor.document.fileName.endsWith('.xaml')) {
+                    vscode.window.showErrorMessage('Please open a XAML file first');
+                    return;
+                }
+                const issues = await AccessibilityChecker.checkAccessibility(editor.document);
+                AccessibilityCheckerPanel.createOrShow(context.extensionUri, context);
+                AccessibilityCheckerPanel.currentPanel?.updateIssues(issues);
+                vscode.window.showInformationMessage(`Found ${issues.length} accessibility issues`);
+            } catch (error: any) {
+                console.error('Error checking accessibility:', error);
+                vscode.window.showErrorMessage(`Failed to check accessibility: ${error?.message || error}`);
+            }
+        }),
+        vscode.commands.registerCommand('lamaworlds.inspectBindings', async () => {
+            try {
+                const editor = vscode.window.activeTextEditor;
+                if (!editor || !editor.document.fileName.endsWith('.xaml')) {
+                    vscode.window.showErrorMessage('Please open a XAML file first');
+                    return;
+                }
+                const bindings = await BindingInspector.extractBindings(editor.document);
+                const validated = await BindingInspector.validateBindings(bindings);
+                BindingDebuggerPanel.createOrShow(context.extensionUri, context);
+                BindingDebuggerPanel.currentPanel?.updateBindings(validated);
+            } catch (error: any) {
+                console.error('Error inspecting bindings:', error);
+                vscode.window.showErrorMessage(`Failed to inspect bindings: ${error?.message || error}`);
+            }
+        }),
+        vscode.commands.registerCommand('lamaworlds.openThemeManager', () => {
+            try {
+                ThemeManagerPanel.createOrShow(context.extensionUri, context);
+            } catch (error: any) {
+                console.error('Error opening Theme Manager:', error);
+                vscode.window.showErrorMessage(`Failed to open Theme Manager: ${error?.message || error}`);
+            }
         })
     );
 
@@ -345,7 +571,10 @@ export function activate(context: vscode.ExtensionContext) {
                         try {
                             return await navigationProvider.provideDefinition(document, position);
                         } catch (error: any) {
-                            console.error('Error providing definition:', error);
+                            debugConsole.error('Error providing definition', error, 'XamlNavigation', {
+                                document: document.fileName,
+                                position: position
+                            });
                             return [];
                         }
                     }
@@ -353,7 +582,7 @@ export function activate(context: vscode.ExtensionContext) {
             )
         );
     } catch (error: any) {
-        console.error('Error registering XAML navigation provider:', error);
+        debugConsole.error('Error registering XAML navigation provider', error, 'XamlNavigation');
     }
 
     // File watchers for auto-refresh
@@ -368,7 +597,9 @@ export function activate(context: vscode.ExtensionContext) {
                 await CommandRegistry.getHotReloadEngine().onFileChanged(uri);
             }
         } catch (error: any) {
-            console.error('Error in file watcher:', error);
+            debugConsole.error('Error in file watcher', error, 'FileWatcher', {
+                uri: uri.fsPath
+            });
         }
     });
     context.subscriptions.push(fileWatcher);
@@ -383,7 +614,9 @@ export function activate(context: vscode.ExtensionContext) {
                 }
             }
         } catch (error: any) {
-            console.error('Error in editor change handler:', error);
+            debugConsole.error('Error in editor change handler', error, 'EditorChangeHandler', {
+                fileName: editor?.document.fileName
+            });
         }
     });
 
@@ -392,9 +625,25 @@ export function activate(context: vscode.ExtensionContext) {
         AutoRestore.initialize(context);
         debugConsole.info('NuGet auto-restore initialized');
     } catch (error: any) {
-        console.error('Error initializing NuGet auto-restore:', error);
-        debugConsole.error(`Failed to initialize NuGet auto-restore: ${error?.message || error}`);
+        debugConsole.error('Error initializing NuGet auto-restore', error, 'AutoRestore');
     }
+
+    // Finalize activation
+    const activationDuration = initTime();
+    debugConsole.info('LamaWorlds WPF Studio extension activation completed', 'Initialization', {
+        duration: activationDuration,
+        stats: debugConsole.getStats()
+    });
+
+    // Add command to show debug console
+    context.subscriptions.push(
+        vscode.commands.registerCommand('lamaworlds.showDebugConsole', () => {
+            debugConsole.show();
+        }),
+        vscode.commands.registerCommand('lamaworlds.exportLogs', async () => {
+            await debugConsole.exportLogs();
+        })
+    );
 }
 
 export function deactivate() {
@@ -413,4 +662,10 @@ export function deactivate() {
     BlendPanel.dispose();
     CommandPalettePanel.dispose();
     NuGetPanel.dispose();
+    StyleEditorPanel.dispose();
+    PerformanceProfilerPanel.dispose();
+    BindingDebuggerPanel.dispose();
+    AccessibilityCheckerPanel.dispose();
+    NavigationGraphPanel.dispose();
+    ThemeManagerPanel.dispose();
 }

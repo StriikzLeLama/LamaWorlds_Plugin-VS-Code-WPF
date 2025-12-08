@@ -16,33 +16,120 @@ An extremely advanced VS Code extension that brings **Visual Studio-level WPF de
 ### 🎯 Core WPF Development
 
 - **WPF Project Generator** - Create .NET 8 WPF projects with MVVM structure
-- **🆕 Interactive WPF Designer** - Full drag & drop designer with live preview, resize handles, and element selection
+- **Interactive WPF Designer** - Full drag & drop designer with live preview, resize handles, and element selection
 - **XAML Live Preview** - Real-time preview with WPF renderer engine
 - **WPF Toolbox** - Drag & drop controls into XAML
 - **Smart Navigation** - Ctrl+Click to navigate bindings, resources, events
 - **XAML Refactoring** - Extract, wrap, convert, rename, generate styles
 - **MVVM Power Tools** - Auto-generate ViewModels, Commands, DataTemplates
 - **Resource Explorer** - Browse and preview all resources
-- **🆕 Visual Tree Inspector** - Deep XAML tree parsing with node selection and property inspection
-- **Hot Reload** - Live reload on file changes
+- **Visual Tree Inspector** - Deep XAML tree parsing with node selection and property inspection
+- **Hot Reload V3** - Live reload of styles, resources, templates, DataContext, animations
 - **Build & Run Panel** - Integrated build, run, and packaging
+- **NuGet Package Manager** - Full-featured package manager with restore, install, update, remove
 
-### 🤖 AI-Powered Features
+### 🎨 Advanced Designer Features (Phase 1)
 
-- **AI UI Generator** - Describe UI in natural language, get XAML + ViewModel
-- **🆕 AI Auto-Layout Engine** - Figma Magic Layout style suggestions (reduce nesting, normalize margins, Grid→StackPanel)
-- **Layout Optimizer** - Analyze and optimize XAML structure
-- **Auto-Fix XAML** - Automatically fix common XAML errors
-- **ViewModel Generator** - Infer ViewModel from XAML bindings
+- **Smart Snapping & Guides** - Figma-like snapping to edges, center lines, baselines with visual cyan guides
+- **Auto-Grid Generator** - Automatically suggests and generates Grid layouts for selected elements
+- **Rulers (Top + Left)** - Pixel rulers with draggable guides
+- **Resize Logic V2** - Maintain aspect ratio (Shift), precise resize (Alt), snapping resize
 
-### 🎬 Advanced Tools
+### 🎭 Style & Template Editor (Phase 2)
 
-- **Animation Editor** - Timeline-based animation editor with keyframes (After Effects-like)
-- **🆕 Responsive Preview Panel** - Multi-size previews (Mobile 375x812, Tablet 768x1024, Desktop 1366x768)
-- **Responsive Design Engine** - Generate responsive layouts and converters
-- **🆕 WPF Blend Clone** - Visual States and Triggers editor
-- **🆕 C# Execution Sandbox** - Real-time code-behind simulator for event handlers
-- **Component Marketplace** - Install ready-to-use components (GlassCard, NeonButton, etc.)
+- **Style Editor Panel** - Visual editor for WPF Styles with live preview
+- **Control Template Designer** - Visual tree editor for template parts
+- **Resource Explorer Enhanced** - Browse all Brushes, Colors, Fonts, Converters with preview
+
+### 🎬 Animation Engine V2 (Phase 3)
+
+- **Keyframe Curves** - Cubic Bezier editors for smooth animations
+- **Multi-Track Animations** - Multiple animation tracks simultaneously
+- **Record Mode** - User manipulates UI, keyframes auto-created
+- **Export Storyboard** - Export animations as XAML Storyboards
+- **Real-Time Preview** - Preview animations in real time
+
+### 🎯 Visual States Editor (Phase 4)
+
+- **State Management** - Create, rename, delete Visual States
+- **Animation Assignment** - Assign animations to states
+- **Transitions** - Manage transitions with duration and easing
+- **Visual State Tree** - Display state-tree visually
+
+### ⚡ Performance Profiler (Phase 5)
+
+- **FPS Measurement** - Real-time FPS monitoring
+- **Layout Time** - Measure layout calculation time
+- **Render Time** - Per-control render time measurement
+- **Heavy Elements** - List elements with high render costs
+- **Binding Overhead** - Report on binding performance
+- **Optimization Suggestions** - AI-powered performance recommendations
+
+### 🔍 Binding Debugger (Phase 6)
+
+- **Binding List** - List all bindings in the view
+- **Current Values** - Show current value of each binding
+- **Error Detection** - Show errors (broken paths, null DataContext, type mismatch)
+- **AI Fixes** - Suggested automatic fixes
+- **Source Navigation** - Navigate to binding source code
+
+### ♿ Accessibility Checker (Phase 7)
+
+- **Contrast Validation** - Check color contrast ratios
+- **Keyboard Navigation** - Detect keyboard accessibility
+- **Tab Order Checker** - Validate tab order
+- **AutomationProperties** - Warn about missing accessibility properties
+
+### 🗺️ Navigation Graph Visualizer (Phase 8)
+
+- **Visual Graph** - Graph view of Windows, UserControls, Pages
+- **Navigation Edges** - Show navigation calls as edges
+- **Click to Open** - Click node to open file
+- **Interactive Graph** - Interactive graph visualization
+
+### 🔧 MVVM Wizard (Phase 9)
+
+- **Code-Behind Conversion** - Convert code-behind Window to MVVM pattern
+- **ViewModel Generation** - Auto-generate ViewModels with properties
+- **RelayCommand Generation** - Generate RelayCommand classes
+- **DataContext Wiring** - Auto-generate DataContext wiring
+
+### 🤖 AI XAML Engine (Phase 10)
+
+- **XAML Refactoring** - Simplify, reorder properties, remove unused resources
+- **AI Error Explainer** - Explain WPF binding/layout/template errors in simple language
+- **AI Auto-Fixes** - Suggest and apply automatic fixes
+- **AI Style Generator** - Generate templates from natural language descriptions
+
+### 🔄 Framework Converters (Phase 11)
+
+- **WPF → Avalonia** - Convert WPF XAML to Avalonia XAML
+- **WPF → MAUI** - Convert WPF XAML to MAUI XAML
+- **WPF → WinUI 3** - Convert WPF XAML to WinUI 3 XAML
+- **WPF → LamaUI** - Convert to future LamaUI framework
+
+### 💻 Live C# Injection (Phase 13)
+
+- **C# Script Runner** - Run C# scripts injected into preview
+- **DataContext Modification** - Modify DataContext live
+- **Command Triggering** - Trigger commands in real-time
+- **Property Changes** - Change properties live
+
+### 🎨 Theme Manager (Phase 14)
+
+- **Global Colors** - Edit global theme colors
+- **Brushes** - Edit theme brushes
+- **Font Sizes** - Edit global font sizes
+- **Instant Application** - Apply theme changes instantly
+
+### 🐛 Enhanced Debug Console
+
+- **Structured Logging** - Logs with categories, context, and stack traces
+- **Performance Tracking** - Built-in performance measurement
+- **Error Notifications** - Automatic error notifications
+- **Log Export** - Export logs to JSON
+- **Statistics** - Error counts, warnings, logs by category
+- **Rich Context** - Every log includes relevant context information
 
 ---
 

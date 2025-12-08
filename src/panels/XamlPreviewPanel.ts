@@ -6,6 +6,7 @@ import { TreeParser } from '../inspector/treeParser';
 import { DragController } from '../interactive/dragController';
 import { ResizeController } from '../interactive/resizeController';
 import { HighlightManager } from '../inspector/highlightManager';
+import { DebugConsole } from '../services/DebugConsole';
 
 /**
  * Interactive XAML Preview Panel with WPF renderer integration
@@ -278,14 +279,16 @@ export class XamlPreviewPanel {
             clearTimeout(initTimeout);
             
             const elapsed = Math.floor((Date.now() - startTime) / 1000);
-            console.log(`Preview engine initialized in ${elapsed} seconds`);
+            DebugConsole.getInstance().info(`Preview engine initialized in ${elapsed} seconds`, 'XamlPreviewPanel', {
+                initializationTime: elapsed
+            });
             
             // Update preview after successful initialization
             await this._update();
         } catch (error: any) {
             clearInterval(progressInterval);
             clearTimeout(initTimeout);
-            console.error('Preview engine initialization error:', error);
+            DebugConsole.getInstance().error('Preview engine initialization error', error, 'XamlPreviewPanel');
             
             // Show helpful error message
             const errorMessage = error.message || 'Unknown error';

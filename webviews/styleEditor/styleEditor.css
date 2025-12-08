@@ -1,0 +1,170 @@
+/* Lama Worlds Theme - Style Editor */
+:root {
+    --lama-bg-dark: #0a0e27;
+    --lama-bg-glass: rgba(10, 14, 39, 0.8);
+    --lama-cyan: #00ffff;
+    --lama-neon-blue: #0080ff;
+    --lama-purple: #8000ff;
+    --lama-border: rgba(0, 255, 255, 0.3);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: var(--lama-bg-dark);
+    color: var(--lama-cyan);
+    overflow: hidden;
+    height: 100vh;
+}
+
+.style-editor-container {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+}
+
+.toolbar {
+    background: var(--lama-bg-glass);
+    border-bottom: 1px solid var(--lama-border);
+    padding: 10px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    backdrop-filter: blur(10px);
+}
+
+.toolbar h1 {
+    font-size: 18px;
+    color: var(--lama-cyan);
+    text-shadow: 0 0 10px var(--lama-cyan);
+}
+
+.lama-btn {
+    background: linear-gradient(135deg, var(--lama-neon-blue), var(--lama-purple));
+    border: 1px solid var(--lama-cyan);
+    color: var(--lama-cyan);
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.3s;
+}
+
+.lama-btn:hover {
+    box-shadow: 0 0 15px var(--lama-cyan);
+    transform: translateY(-2px);
+}
+
+.content {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+}
+
+.styles-list {
+    width: 300px;
+    background: var(--lama-bg-glass);
+    border-right: 1px solid var(--lama-border);
+    padding: 20px;
+    overflow-y: auto;
+}
+
+.styles-list h2 {
+    font-size: 16px;
+    margin-bottom: 15px;
+    color: var(--lama-cyan);
+}
+
+.style-item {
+    background: rgba(0, 255, 255, 0.1);
+    border: 1px solid var(--lama-border);
+    border-radius: 4px;
+    padding: 12px;
+    margin-bottom: 10px;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.style-item:hover {
+    background: rgba(0, 255, 255, 0.2);
+    border-color: var(--lama-cyan);
+    box-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
+}
+
+.style-item.selected {
+    background: rgba(0, 255, 255, 0.3);
+    border-color: var(--lama-cyan);
+    box-shadow: 0 0 15px var(--lama-cyan);
+}
+
+.style-name {
+    font-weight: bold;
+    color: var(--lama-cyan);
+    margin-bottom: 5px;
+}
+
+.style-target {
+    font-size: 12px;
+    color: rgba(0, 255, 255, 0.7);
+}
+
+.style-editor {
+    flex: 1;
+    padding: 20px;
+    overflow-y: auto;
+}
+
+.style-editor h2 {
+    font-size: 16px;
+    margin-bottom: 20px;
+    color: var(--lama-cyan);
+}
+
+.property-editor {
+    background: var(--lama-bg-glass);
+    border: 1px solid var(--lama-border);
+    border-radius: 4px;
+    padding: 15px;
+    margin-bottom: 15px;
+}
+
+.property-label {
+    font-weight: bold;
+    color: var(--lama-cyan);
+    margin-bottom: 8px;
+    display: block;
+}
+
+.property-input {
+    width: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    border: 1px solid var(--lama-border);
+    color: var(--lama-cyan);
+    padding: 8px;
+    border-radius: 4px;
+    font-family: 'Courier New', monospace;
+}
+
+.property-input:focus {
+    outline: none;
+    border-color: var(--lama-cyan);
+    box-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
+}
+
+.preview-box {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid var(--lama-border);
+    border-radius: 4px;
+    padding: 20px;
+    margin-top: 20px;
+    min-height: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+

@@ -133,7 +133,11 @@ export class PreviewEngine {
         } catch (error: any) {
             const errorMsg = error.message || 'Unknown build error';
             vscode.window.showErrorMessage(`Failed to build renderer: ${errorMsg}`);
-            console.error('Renderer build error:', error);
+            DebugConsole.getInstance().error('Renderer build error', error, 'PreviewEngine', {
+                projectPath,
+                stderr: error.stderr,
+                stdout: error.stdout
+            });
             throw error;
         }
     }

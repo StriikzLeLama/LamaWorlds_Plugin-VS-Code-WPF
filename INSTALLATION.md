@@ -92,9 +92,11 @@ If you see TypeScript errors about missing modules:
    - Le renderer sera rebuild automatiquement
 
 3. **Vérifier les logs** :
-   - Ouvrez Debug Inspector (`Lama Worlds: Open Debug Inspector`)
-   - Onglet "Debug Console" pour voir les logs détaillés
-   - Cherchez les messages `[INFO]`, `[WARN]`, `[ERROR]`
+   - Ouvrez Debug Console (`Lama Worlds: Show Debug Console` ou `Ctrl+Shift+P` → "Show Debug Console")
+   - Ou ouvrez Debug Inspector (`Lama Worlds: Open Debug Inspector`)
+   - Onglet "Debug Console" pour voir les logs détaillés avec contexte
+   - Cherchez les messages `[INFO]`, `[WARN]`, `[ERROR]` avec timestamps précis
+   - Les logs incluent maintenant le contexte complet (fichiers, paramètres, stack traces)
 
 4. **Tester le renderer manuellement** :
    ```powershell

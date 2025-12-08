@@ -1,0 +1,125 @@
+/* Lama Worlds Theme - Navigation Graph */
+:root {
+    --lama-bg-dark: #0a0e27;
+    --lama-bg-glass: rgba(10, 14, 39, 0.8);
+    --lama-cyan: #00ffff;
+    --lama-neon-blue: #0080ff;
+    --lama-purple: #8000ff;
+    --lama-border: rgba(0, 255, 255, 0.3);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: var(--lama-bg-dark);
+    color: var(--lama-cyan);
+    overflow: hidden;
+    height: 100vh;
+}
+
+.navigation-container {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+}
+
+.toolbar {
+    background: var(--lama-bg-glass);
+    border-bottom: 1px solid var(--lama-border);
+    padding: 10px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    backdrop-filter: blur(10px);
+}
+
+.toolbar h1 {
+    font-size: 18px;
+    color: var(--lama-cyan);
+    text-shadow: 0 0 10px var(--lama-cyan);
+}
+
+.lama-btn {
+    background: linear-gradient(135deg, var(--lama-neon-blue), var(--lama-purple));
+    border: 1px solid var(--lama-cyan);
+    color: var(--lama-cyan);
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.3s;
+}
+
+.lama-btn:hover {
+    box-shadow: 0 0 15px var(--lama-cyan);
+    transform: translateY(-2px);
+}
+
+#graphContainer {
+    flex: 1;
+    background: var(--lama-bg-dark);
+    position: relative;
+    overflow: hidden;
+}
+
+.node {
+    position: absolute;
+    background: var(--lama-bg-glass);
+    border: 2px solid var(--lama-cyan);
+    border-radius: 8px;
+    padding: 15px;
+    min-width: 120px;
+    cursor: pointer;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
+    transition: all 0.3s;
+}
+
+.node:hover {
+    border-color: var(--lama-neon-blue);
+    box-shadow: 0 0 30px rgba(0, 128, 255, 0.5);
+    transform: scale(1.05);
+}
+
+.node.window {
+    border-color: var(--lama-cyan);
+}
+
+.node.usercontrol {
+    border-color: var(--lama-neon-blue);
+}
+
+.node.page {
+    border-color: var(--lama-purple);
+}
+
+.node-title {
+    font-weight: bold;
+    color: var(--lama-cyan);
+    margin-bottom: 5px;
+}
+
+.node-type {
+    font-size: 12px;
+    color: rgba(0, 255, 255, 0.7);
+    text-transform: uppercase;
+}
+
+.edge {
+    position: absolute;
+    pointer-events: none;
+    stroke: var(--lama-cyan);
+    stroke-width: 2px;
+    opacity: 0.6;
+}
+
+.edge:hover {
+    stroke-width: 3px;
+    opacity: 1;
+}
+

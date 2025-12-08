@@ -1,0 +1,227 @@
+/* Lama Worlds Theme - Binding Debugger */
+:root {
+    --lama-bg-dark: #0a0e27;
+    --lama-bg-glass: rgba(10, 14, 39, 0.8);
+    --lama-cyan: #00ffff;
+    --lama-neon-blue: #0080ff;
+    --lama-purple: #8000ff;
+    --lama-border: rgba(0, 255, 255, 0.3);
+    --lama-error: #ff0080;
+    --lama-warning: #ffaa00;
+    --lama-success: #00ff80;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: var(--lama-bg-dark);
+    color: var(--lama-cyan);
+    overflow: hidden;
+    height: 100vh;
+}
+
+.binding-debugger-container {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+}
+
+.toolbar {
+    background: var(--lama-bg-glass);
+    border-bottom: 1px solid var(--lama-border);
+    padding: 10px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    backdrop-filter: blur(10px);
+}
+
+.toolbar h1 {
+    font-size: 18px;
+    color: var(--lama-cyan);
+    text-shadow: 0 0 10px var(--lama-cyan);
+}
+
+.lama-btn {
+    background: linear-gradient(135deg, var(--lama-neon-blue), var(--lama-purple));
+    border: 1px solid var(--lama-cyan);
+    color: var(--lama-cyan);
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.3s;
+}
+
+.lama-btn:hover {
+    box-shadow: 0 0 15px var(--lama-cyan);
+    transform: translateY(-2px);
+}
+
+.content {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+}
+
+.bindings-list {
+    width: 400px;
+    background: var(--lama-bg-glass);
+    border-right: 1px solid var(--lama-border);
+    padding: 20px;
+    overflow-y: auto;
+}
+
+.bindings-list h2 {
+    font-size: 16px;
+    margin-bottom: 15px;
+    color: var(--lama-cyan);
+}
+
+.binding-item {
+    background: rgba(0, 255, 255, 0.1);
+    border: 1px solid var(--lama-border);
+    border-radius: 4px;
+    padding: 12px;
+    margin-bottom: 10px;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.binding-item:hover {
+    background: rgba(0, 255, 255, 0.2);
+    border-color: var(--lama-cyan);
+    box-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
+}
+
+.binding-item.selected {
+    background: rgba(0, 255, 255, 0.3);
+    border-color: var(--lama-cyan);
+    box-shadow: 0 0 15px var(--lama-cyan);
+}
+
+.binding-item.error {
+    border-color: var(--lama-error);
+}
+
+.binding-item.warning {
+    border-color: var(--lama-warning);
+}
+
+.binding-item.ok {
+    border-color: var(--lama-success);
+}
+
+.binding-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.binding-path {
+    font-weight: bold;
+    color: var(--lama-cyan);
+}
+
+.binding-status {
+    font-size: 12px;
+    padding: 2px 8px;
+    border-radius: 12px;
+    text-transform: uppercase;
+}
+
+.binding-status.ok {
+    background: var(--lama-success);
+    color: var(--lama-bg-dark);
+}
+
+.binding-status.warning {
+    background: var(--lama-warning);
+    color: var(--lama-bg-dark);
+}
+
+.binding-status.error {
+    background: var(--lama-error);
+    color: white;
+}
+
+.binding-info {
+    font-size: 12px;
+    color: rgba(0, 255, 255, 0.7);
+    margin-bottom: 5px;
+}
+
+.binding-value {
+    font-family: 'Courier New', monospace;
+    font-size: 12px;
+    color: var(--lama-cyan);
+    background: rgba(0, 0, 0, 0.3);
+    padding: 4px 8px;
+    border-radius: 4px;
+    margin-top: 5px;
+}
+
+.binding-details {
+    flex: 1;
+    padding: 20px;
+    overflow-y: auto;
+}
+
+.binding-details h2 {
+    font-size: 16px;
+    margin-bottom: 20px;
+    color: var(--lama-cyan);
+}
+
+.detail-section {
+    background: var(--lama-bg-glass);
+    border: 1px solid var(--lama-border);
+    border-radius: 4px;
+    padding: 15px;
+    margin-bottom: 15px;
+}
+
+.detail-label {
+    font-weight: bold;
+    color: var(--lama-cyan);
+    margin-bottom: 8px;
+    display: block;
+}
+
+.detail-value {
+    color: rgba(0, 255, 255, 0.9);
+    font-family: 'Courier New', monospace;
+    background: rgba(0, 0, 0, 0.3);
+    padding: 8px;
+    border-radius: 4px;
+    word-break: break-all;
+}
+
+.error-message {
+    color: var(--lama-error);
+    background: rgba(255, 0, 128, 0.1);
+    border: 1px solid var(--lama-error);
+    border-radius: 4px;
+    padding: 12px;
+    margin-bottom: 15px;
+}
+
+.suggestions {
+    margin-top: 15px;
+}
+
+.suggestion-item {
+    background: rgba(0, 255, 255, 0.1);
+    border: 1px solid var(--lama-border);
+    border-radius: 4px;
+    padding: 10px;
+    margin-bottom: 8px;
+    color: rgba(0, 255, 255, 0.9);
+}
+

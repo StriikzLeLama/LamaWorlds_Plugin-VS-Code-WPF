@@ -1,6 +1,7 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
 import * as fs from 'fs';
+import { DebugConsole } from '../services/DebugConsole';
 
 /**
  * Tree Data Provider for Resource Explorer View
@@ -71,7 +72,7 @@ export class ResourceExplorerTreeProvider implements vscode.TreeDataProvider<Res
             // Simple implementation - in production, use glob
             this.findFilesRecursive(rootPath, files);
         } catch (error) {
-            console.error('Error finding files:', error);
+            DebugConsole.getInstance().error('Error finding files', error, 'ResourceExplorerTreeProvider');
         }
         return files;
     }

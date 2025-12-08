@@ -14,11 +14,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "L:\\Logiciel\\Visual Studio 2022\\VS Studio Project\\Plugin VS Code WPF\\templates\\wpf-project\\LamaWorldsApp.csproj",
+      "projectUniqueName": "l:\\Logiciel\\Visual Studio 2022\\VS Studio Project\\Plugin-VS-Code-WPF\\templates\\wpf-project\\LamaWorldsApp.csproj",
       "projectName": "LamaWorldsApp",
-      "projectPath": "L:\\Logiciel\\Visual Studio 2022\\VS Studio Project\\Plugin VS Code WPF\\templates\\wpf-project\\LamaWorldsApp.csproj",
+      "projectPath": "l:\\Logiciel\\Visual Studio 2022\\VS Studio Project\\Plugin-VS-Code-WPF\\templates\\wpf-project\\LamaWorldsApp.csproj",
       "packagesPath": "C:\\Users\\cypri\\.nuget\\packages\\",
-      "outputPath": "L:\\Logiciel\\Visual Studio 2022\\VS Studio Project\\Plugin VS Code WPF\\templates\\wpf-project\\obj\\",
+      "outputPath": "l:\\Logiciel\\Visual Studio 2022\\VS Studio Project\\Plugin-VS-Code-WPF\\templates\\wpf-project\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "L:\\Logiciel\\Visual Studio 2022\\SDK\\NuGetPackages"

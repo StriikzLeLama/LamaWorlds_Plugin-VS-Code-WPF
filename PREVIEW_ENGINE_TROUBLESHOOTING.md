@@ -22,13 +22,19 @@
 
 ### Vérifier les logs
 
-1. **Ouvrir Debug Inspector** :
-   - Commande : `Lama Worlds: Open Debug Inspector`
-   - Onglet "Debug Console" pour voir tous les logs
+1. **Ouvrir Debug Console** :
+   - Commande : `Lama Worlds: Show Debug Console` ou `Ctrl+Shift+P` → "Show Debug Console"
+   - Ou ouvrir Debug Inspector : `Lama Worlds: Open Debug Inspector` → Onglet "Debug Console"
+   - Tous les logs sont maintenant avec contexte complet, catégories, et timestamps précis
 
 2. **Vérifier Output Panel** :
    - Cherchez "Lama Worlds Debug" dans la liste déroulante
-   - Vous verrez tous les logs détaillés
+   - Vous verrez tous les logs détaillés avec :
+     - Timestamps avec millisecondes
+     - Catégories (PreviewEngine, XamlPreviewPanel, etc.)
+     - Contexte (fichiers, paramètres, états)
+     - Durées de performance pour chaque opération
+   - Exportez les logs : `Lama Worlds: Export Logs` pour sauvegarder en JSON
 
 ### Logs importants à vérifier
 
@@ -106,13 +112,44 @@ Assurez-vous que :
 2. **stdin/stdout buffering** : Parfois le flush ne se fait pas immédiatement
 3. **Premier build lent** : Normal, peut prendre 1-2 minutes
 
-## 📝 Logs de Debug
+## 📝 Logs de Debug (Enhanced)
 
-Pour activer plus de logs, vérifiez dans `src/preview/previewEngine.ts` :
+Le système de logging a été considérablement amélioré :
+
+### Niveaux de Log
+- `debugConsole.trace()` - Logs très détaillés (verbose)
 - `debugConsole.debug()` - Logs détaillés
 - `debugConsole.info()` - Informations importantes
 - `debugConsole.warn()` - Avertissements
-- `debugConsole.error()` - Erreurs
+- `debugConsole.error()` - Erreurs avec stack traces
 
-Tous ces logs sont visibles dans le Debug Inspector.
+### Fonctionnalités
+- **Performance Tracking** : `debugConsole.time()` pour mesurer la durée des opérations
+- **Contexte Rich** : Chaque log inclut des informations contextuelles (fichiers, paramètres, états)
+- **Catégories** : Logs organisés par catégorie (PreviewEngine, XamlPreviewPanel, etc.)
+- **Export** : Possibilité d'exporter tous les logs en JSON
+
+### Utilisation dans le code
+```typescript
+// Mesure de performance
+const endTimer = debugConsole.time('Renderer Build', 'PreviewEngine');
+// ... code ...
+const duration = endTimer(); // Affiche la durée automatiquement
+
+// Log avec contexte
+debugConsole.info('Rendering XAML', 'PreviewEngine', {
+    xamlLength: xaml.length,
+    renderMode: this.currentMode
+});
+
+// Log d'erreur avec stack trace
+debugConsole.error('Failed to render', error, 'PreviewEngine', {
+    xamlPath: document.uri.fsPath
+});
+```
+
+Tous ces logs sont visibles dans :
+- Debug Console (`Lama Worlds: Show Debug Console`)
+- Debug Inspector (`Lama Worlds: Open Debug Inspector` → Onglet "Debug Console")
+- Output Panel (channel "Lama Worlds Debug")
 
