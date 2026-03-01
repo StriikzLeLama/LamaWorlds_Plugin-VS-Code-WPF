@@ -7,6 +7,7 @@ import { DragController } from '../interactive/dragController';
 import { ResizeController } from '../interactive/resizeController';
 import { HighlightManager } from '../inspector/highlightManager';
 import { DebugConsole } from '../services/DebugConsole';
+import { PropertiesPanel } from './PropertiesPanel';
 
 /**
  * Interactive XAML Preview Panel with WPF renderer integration
@@ -22,7 +23,7 @@ export class XamlPreviewPanel {
     private _xamlContent: string = '';
     private _xamlDocument: vscode.TextDocument | null = null;
     private _isDisposed: boolean = false; // Flag to track if panel is disposed
-    
+
     // Preview engine and components
     private _previewEngine: PreviewEngine;
     private _treeParser: TreeParser;
@@ -52,19 +53,19 @@ export class XamlPreviewPanel {
             // Mark as disposed immediately
             this._isDisposed = true;
             XamlPreviewPanel._userClosed = true;
-            
+
             // Clear static reference so it doesn't auto-reopen
             if (XamlPreviewPanel.currentPanel === this) {
                 XamlPreviewPanel.currentPanel = undefined;
             }
             this.dispose();
         }, null, this._disposables);
-        
+
         // Listen for visibility changes to prevent auto-refresh when hidden
         this._panel.onDidChangeViewState((e) => {
             // Check if panel is still active
             if (this._isDisposed) return;
-            
+
             try {
                 // If panel becomes visible and we have XAML content, refresh
                 if (e.webviewPanel.visible && this._xamlContent && this._panel.webview) {
@@ -89,11 +90,11 @@ export class XamlPreviewPanel {
         watcher.onDidChange(async (uri) => {
             // Check if panel is still active before accessing properties
             if (this._isDisposed) return;
-            
+
             try {
-                if (this._panel && 
-                    this._panel.webview && 
-                    this._panel.visible && 
+                if (this._panel &&
+                    this._panel.webview &&
+                    this._panel.visible &&
                     this._xamlDocument?.uri.toString() === uri.toString()) {
                     await this._refreshPreview();
                 }
@@ -107,12 +108,12 @@ export class XamlPreviewPanel {
         vscode.window.onDidChangeActiveTextEditor(async (editor) => {
             // Check if panel is still active before accessing properties
             if (this._isDisposed) return;
-            
+
             try {
-                if (this._panel && 
-                    this._panel.webview && 
-                    this._panel.visible && 
-                    editor && 
+                if (this._panel &&
+                    this._panel.webview &&
+                    this._panel.visible &&
+                    editor &&
                     editor.document.fileName.endsWith('.xaml')) {
                     this._xamlDocument = editor.document;
                     this._dragController.setXamlDocument(editor.document);
@@ -184,12 +185,12 @@ export class XamlPreviewPanel {
         // Mark as disposed immediately to prevent any further operations
         this._isDisposed = true;
         XamlPreviewPanel._userClosed = true;
-        
+
         // Clear static reference first
         if (XamlPreviewPanel.currentPanel === this) {
             XamlPreviewPanel.currentPanel = undefined;
         }
-        
+
         // Clean up components
         try {
             this._previewEngine.stopRenderer();
@@ -211,7 +212,7 @@ export class XamlPreviewPanel {
                 }
             }
         }
-        
+
         // Dispose panel last
         try {
             this._panel.dispose();
@@ -226,14 +227,14 @@ export class XamlPreviewPanel {
     private async _initializePreviewEngine(context: vscode.ExtensionContext): Promise<void> {
         const startTime = Date.now();
         let progressStep = 0;
-        
+
         // Update progress every 2 seconds
         const progressInterval = setInterval(() => {
             progressStep++;
             const elapsed = Math.floor((Date.now() - startTime) / 1000);
             let status = 'Initializing preview engine...';
             let estimatedTime = '';
-            
+
             if (elapsed < 5) {
                 status = 'Checking renderer...';
                 estimatedTime = '~2-5 seconds';
@@ -247,7 +248,7 @@ export class XamlPreviewPanel {
                 status = 'Still building renderer...';
                 estimatedTime = 'Please wait...';
             }
-            
+
             if (this._panel && this._panel.webview) {
                 this._panel.webview.html = this._getLoadingHtml(status, elapsed, estimatedTime);
             }
@@ -270,31 +271,36 @@ export class XamlPreviewPanel {
         try {
             await Promise.race([
                 this._previewEngine.initialize(context),
-                new Promise((_, reject) => 
+                new Promise((_, reject) =>
                     setTimeout(() => reject(new Error('Initialization timeout after 2 minutes')), 120000)
                 )
             ]);
-            
+
             clearInterval(progressInterval);
             clearTimeout(initTimeout);
-            
+
             const elapsed = Math.floor((Date.now() - startTime) / 1000);
             DebugConsole.getInstance().info(`Preview engine initialized in ${elapsed} seconds`, 'XamlPreviewPanel', {
                 initializationTime: elapsed
             });
-            
+
+            // Set the real preview HTML now that we're initialized
+            if (!this._isDisposed && this._panel && this._panel.webview) {
+                this._panel.webview.html = this._getWebviewContent();
+            }
+
             // Update preview after successful initialization
             await this._update();
         } catch (error: any) {
             clearInterval(progressInterval);
             clearTimeout(initTimeout);
             DebugConsole.getInstance().error('Preview engine initialization error', error, 'XamlPreviewPanel');
-            
+
             // Show helpful error message
             const errorMessage = error.message || 'Unknown error';
             const isTimeout = errorMessage.includes('timeout');
             const isBuildError = errorMessage.includes('build') || errorMessage.includes('dotnet');
-            
+
             let userMessage = 'Failed to initialize preview engine.';
             if (isTimeout) {
                 userMessage += ' The renderer build is taking too long. Please ensure .NET 8 SDK is installed.';
@@ -303,7 +309,7 @@ export class XamlPreviewPanel {
             } else {
                 userMessage += ` ${errorMessage}`;
             }
-            
+
             if (!this._isDisposed && this._panel && this._panel.webview) {
                 try {
                     this._panel.webview.html = this._getErrorHtml(userMessage);
@@ -311,7 +317,7 @@ export class XamlPreviewPanel {
                     // Panel was disposed, ignore
                 }
             }
-            
+
             // Show notification to user
             vscode.window.showWarningMessage(
                 'WPF Preview: Renderer initialization failed. Preview will work in fallback mode.',
@@ -363,15 +369,15 @@ export class XamlPreviewPanel {
         try {
             // Render using preview engine
             const result = await this._previewEngine.renderFastLive(this._xamlContent);
-            
+
             // Check again if panel is still active after async operation
             if (this._isDisposed || !this._panel || !this._panel.webview) {
                 return; // Panel was disposed during rendering
             }
-            
+
             // Get layout map
             const layoutMap = await this._previewEngine.getLayoutMap();
-            
+
             // Parse layout map
             if (layoutMap) {
                 this._treeParser.parseLayoutMap(layoutMap);
@@ -383,6 +389,7 @@ export class XamlPreviewPanel {
             }
 
             // Send preview update to webview
+            console.log(`[PreviewPanel] Sending update to webview: ${result.width}x${result.height}`);
             this._panel.webview.postMessage({
                 command: 'previewUpdate',
                 imageBase64: result.imageBase64,
@@ -391,11 +398,12 @@ export class XamlPreviewPanel {
                 layoutMap: layoutMap
             });
         } catch (error: any) {
+            console.error('[PreviewPanel] Rendering failed:', error);
             // Check again before sending error message
             if (this._isDisposed || !this._panel || !this._panel.webview) {
                 return;
             }
-            
+
             this._panel.webview.postMessage({
                 command: 'previewError',
                 error: error.message || 'Preview error occurred'
@@ -464,20 +472,24 @@ export class XamlPreviewPanel {
         const layoutElement = this._treeParser.getElementById(elementId);
         if (layoutElement) {
             this._highlightManager.selectElement(layoutElement);
-            
+
             // Scroll to element in XAML editor
             await this._scrollToElement(layoutElement);
-            
+
             // Check again after async operation
             if (this._isDisposed || !this._panel || !this._panel.webview) {
                 return;
             }
-            
+
             // Send highlight update to webview
             this._panel.webview.postMessage({
                 command: 'elementHighlighted',
                 element: layoutElement
             });
+
+            // Update Properties Panel
+            PropertiesPanel.createOrShow(this._extensionUri);
+            PropertiesPanel.currentPanel?.selectElement(layoutElement);
         }
     }
 
@@ -488,7 +500,7 @@ export class XamlPreviewPanel {
 
         const editor = await vscode.window.showTextDocument(this._xamlDocument);
         const xaml = this._xamlDocument.getText();
-        
+
         // Try to find element by name or type
         let searchPattern: RegExp | null = null;
         if (element.name) {
@@ -527,42 +539,17 @@ export class XamlPreviewPanel {
     <link rel="stylesheet" href="${cssPath}">
 </head>
 <body>
-    <div class="preview-container">
-        <div class="preview-toolbar">
-            <div class="toolbar-left">
-                <button id="refreshBtn" class="toolbar-btn" title="Refresh Preview">
-                    <span class="icon">🔄</span>
-                </button>
-                <button id="modeBtn" class="toolbar-btn" title="Toggle Mode">
-                    <span class="icon">⚡</span>
-                    <span id="modeLabel">FastLive</span>
-                </button>
-            </div>
-            <div class="toolbar-right">
-                <div class="zoom-controls">
-                    <button id="zoomOutBtn" class="toolbar-btn" title="Zoom Out">−</button>
-                    <span id="zoomLabel">100%</span>
-                    <button id="zoomInBtn" class="toolbar-btn" title="Zoom In">+</button>
-                </div>
-            </div>
-        </div>
-        
-        <div class="preview-content" id="previewContent">
-            <div class="preview-image-container" id="imageContainer">
-                <img id="previewImage" alt="XAML Preview" />
-                <canvas id="overlayCanvas"></canvas>
-            </div>
-            <div class="preview-loading" id="loadingIndicator">
-                <div class="spinner"></div>
-                <p>Rendering preview...</p>
-            </div>
-            <div class="preview-error" id="errorIndicator" style="display: none;">
-                <p id="errorMessage"></p>
-            </div>
-        </div>
-    </div>
-    
-    <script src="${jsPath}"></script>
+    <div id="root"></div>
+    <script>
+        fetch("${htmlPath}")
+            .then(response => response.text())
+            .then(html => {
+                document.getElementById('root').innerHTML = html;
+                const script = document.createElement('script');
+                script.src = "${jsPath}";
+                document.body.appendChild(script);
+            });
+    </script>
 </body>
 </html>`;
     }

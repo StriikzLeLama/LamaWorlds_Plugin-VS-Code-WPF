@@ -61,11 +61,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "l:\\Logiciel\\Visual Studio 2022\\VS Studio Project\\Plugin-VS-Code-WPF\\preview-engine\\renderer\\Renderer.csproj",
+      "projectUniqueName": "L:\\Logiciel\\Visual Studio 2022\\VS Studio Project\\Plugin-VS-Code-WPF\\preview-engine\\renderer\\Renderer.csproj",
       "projectName": "renderer",
-      "projectPath": "l:\\Logiciel\\Visual Studio 2022\\VS Studio Project\\Plugin-VS-Code-WPF\\preview-engine\\renderer\\Renderer.csproj",
+      "projectPath": "L:\\Logiciel\\Visual Studio 2022\\VS Studio Project\\Plugin-VS-Code-WPF\\preview-engine\\renderer\\Renderer.csproj",
       "packagesPath": "C:\\Users\\cypri\\.nuget\\packages\\",
-      "outputPath": "l:\\Logiciel\\Visual Studio 2022\\VS Studio Project\\Plugin-VS-Code-WPF\\preview-engine\\renderer\\obj\\",
+      "outputPath": "L:\\Logiciel\\Visual Studio 2022\\VS Studio Project\\Plugin-VS-Code-WPF\\preview-engine\\renderer\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "L:\\Logiciel\\Visual Studio 2022\\SDK\\NuGetPackages"
@@ -129,7 +129,7 @@
             "privateAssets": "none"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.100/PortableRuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.101/PortableRuntimeIdentifierGraph.json"
       }
     }
   }

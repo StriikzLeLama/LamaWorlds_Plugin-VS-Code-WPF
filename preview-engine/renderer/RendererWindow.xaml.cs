@@ -20,14 +20,14 @@ namespace Renderer
         public RendererWindow()
         {
             InitializeComponent();
-            
+
             // Make window invisible (headless mode)
             this.WindowState = WindowState.Minimized;
             this.ShowInTaskbar = false;
             this.Width = 1;
             this.Height = 1;
             this.Visibility = Visibility.Hidden;
-            
+
             this.Loaded += RendererWindow_Loaded;
         }
 
@@ -43,7 +43,7 @@ namespace Renderer
             {
                 System.Diagnostics.Debug.WriteLine($"[Renderer] Failed to send ready in Loaded: {ex.Message}");
             }
-            
+
             await StartListeningAsync();
         }
 
@@ -74,9 +74,9 @@ namespace Renderer
                                 if (message != null)
                                 {
                                     System.Diagnostics.Debug.WriteLine($"[Renderer] Parsed message type: {message.Type}");
-                                    
+
                                     // Process on UI thread
-                                    await Dispatcher.InvokeAsync(() => 
+                                    await Dispatcher.InvokeAsync(() =>
                                     {
                                         try
                                         {
@@ -140,25 +140,45 @@ namespace Renderer
             try
             {
                 System.Diagnostics.Debug.WriteLine($"[Renderer] Starting render, XAML length: {xaml.Length}");
-                
+
+                // Pre-process XAML (strip x:Class, handle Window, etc.)
+                xaml = PreprocessXaml(xaml);
+
                 // Clear previous content
                 ContentGrid.Children.Clear();
 
                 // Parse and load XAML
                 System.Diagnostics.Debug.WriteLine("[Renderer] Parsing XAML...");
-                var xamlObject = XamlReader.Parse(xaml);
-                
+                object xamlObject;
+                try
+                {
+                    xamlObject = XamlReader.Parse(xaml);
+                }
+                catch (XamlParseException ex)
+                {
+                    SendError($"XAML Parse Error (Line {ex.LineNumber}, Col {ex.LinePosition}): {ex.Message}");
+                    return;
+                }
+
+                if (xamlObject is Window window)
+                {
+                    // If root is Window, extract its content
+                    var content = window.Content;
+                    window.Content = null; // Detach content
+                    xamlObject = content;
+                }
+
                 if (xamlObject is UIElement element)
                 {
                     System.Diagnostics.Debug.WriteLine($"[Renderer] XAML parsed successfully, type: {element.GetType().Name}");
-                    
+
                     ContentGrid.Children.Add(element);
-                    
+
                     // Measure and arrange
                     System.Diagnostics.Debug.WriteLine("[Renderer] Measuring element...");
                     element.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
                     element.Arrange(new Rect(0, 0, element.DesiredSize.Width, element.DesiredSize.Height));
-                    
+
                     // Update window size
                     this.Width = Math.Max(element.DesiredSize.Width, 100);
                     this.Height = Math.Max(element.DesiredSize.Height, 100);
@@ -170,7 +190,7 @@ namespace Renderer
                     // Force layout update
                     System.Diagnostics.Debug.WriteLine("[Renderer] Updating layout...");
                     this.UpdateLayout();
-                    
+
                     // Wait a bit for rendering to complete
                     System.Threading.Thread.Sleep(100);
 
@@ -178,7 +198,7 @@ namespace Renderer
                     System.Diagnostics.Debug.WriteLine("[Renderer] Capturing to PNG...");
                     var pngBytes = CaptureToPng();
                     System.Diagnostics.Debug.WriteLine($"[Renderer] PNG captured, size: {pngBytes.Length} bytes");
-                    
+
                     // Send response
                     var response = new RendererResponse
                     {
@@ -187,7 +207,7 @@ namespace Renderer
                         Width = (int)this.Width,
                         Height = (int)this.Height
                     };
-                    
+
                     System.Diagnostics.Debug.WriteLine("[Renderer] Sending response...");
                     SendResponse(response);
                     System.Diagnostics.Debug.WriteLine("[Renderer] Response sent successfully");
@@ -201,8 +221,24 @@ namespace Renderer
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine($"[Renderer] Exception in RenderXaml: {ex.Message}\n{ex.StackTrace}");
-                SendError($"Render error: {ex.Message}");
+                SendError($"Render error: {ex.GetType().Name} - {ex.Message}");
             }
+        }
+
+        private string PreprocessXaml(string xaml)
+        {
+            if (string.IsNullOrWhiteSpace(xaml)) return xaml;
+
+            // 1. Remove x:Class attributes (not supported by XamlReader.Parse)
+            // Regex to find x:Class="Any.Name.Space" but being careful with quotes
+            var classRegex = new System.Text.RegularExpressions.Regex(@"x:Class\s*=\s*""[^""]*""", System.Text.RegularExpressions.RegexOptions.IgnoreCase);
+            xaml = classRegex.Replace(xaml, "");
+
+            // 2. Remove ignored namespaces if any (common in Blend/VS)
+            // e.g. mc:Ignorable="d" -> we could strip d:DesignWidth etc if needed
+            // For now, XamlReader usually handles them if the namespace is defined
+
+            return xaml;
         }
 
         private byte[] CaptureToPng()
@@ -247,7 +283,7 @@ namespace Renderer
         {
             var id = Guid.NewGuid().ToString("N").Substring(0, 8);
             var bounds = GetElementBounds(element);
-            
+
             var layoutElement = new LayoutElement
             {
                 Id = id,
@@ -274,6 +310,10 @@ namespace Renderer
                 layoutElement.Margin = fe.Margin.ToString();
                 layoutElement.Width = fe.Width;
                 layoutElement.Height = fe.Height;
+                layoutElement.HorizontalAlignment = fe.HorizontalAlignment.ToString();
+                layoutElement.VerticalAlignment = fe.VerticalAlignment.ToString();
+                layoutElement.Visibility = fe.Visibility.ToString();
+                layoutElement.Opacity = fe.Opacity;
             }
 
             // Recursively process children
@@ -320,15 +360,15 @@ namespace Renderer
             {
                 var json = JsonConvert.SerializeObject(response);
                 System.Diagnostics.Debug.WriteLine($"[Renderer] Sending response type: {response.Type}, JSON length: {json.Length}");
-                
+
                 // Write to stdout and flush immediately
                 Console.Out.WriteLine(json);
                 Console.Out.Flush();
-                
+
                 // Also try stderr as backup
                 Console.Error.WriteLine($"[DEBUG] Response sent: {response.Type}");
                 Console.Error.Flush();
-                
+
                 System.Diagnostics.Debug.WriteLine($"[Renderer] Response flushed: {response.Type}");
             }
             catch (Exception ex)
@@ -423,6 +463,18 @@ namespace Renderer
 
         [JsonProperty("height")]
         public double Height { get; set; } = double.NaN;
+
+        [JsonProperty("horizontalAlignment")]
+        public string HorizontalAlignment { get; set; } = "";
+
+        [JsonProperty("verticalAlignment")]
+        public string VerticalAlignment { get; set; } = "";
+
+        [JsonProperty("visibility")]
+        public string Visibility { get; set; } = "";
+
+        [JsonProperty("opacity")]
+        public double Opacity { get; set; } = 1.0;
 
         [JsonProperty("children")]
         public System.Collections.Generic.List<LayoutElement>? Children { get; set; }

@@ -22,7 +22,7 @@ export class PreviewEngine {
     private _currentMode: 'FastLive' | 'FullBuild' = 'FastLive';
     private _isStopping: boolean = false;
 
-    private constructor() {}
+    private constructor() { }
 
     public static getInstance(): PreviewEngine {
         if (!PreviewEngine._instance) {
@@ -69,7 +69,7 @@ export class PreviewEngine {
             try {
                 await Promise.race([
                     this.buildRenderer(rendererProjectPath),
-                    new Promise((_, reject) => 
+                    new Promise((_, reject) =>
                         setTimeout(() => reject(new Error('Build timeout after 120 seconds')), 120000)
                     )
                 ]);
@@ -89,7 +89,7 @@ export class PreviewEngine {
 
         this._rendererPath = rendererExePath;
         this._isInitialized = true;
-        
+
         const totalTime = Math.floor((Date.now() - startTime) / 1000);
         debugConsole.info(`Preview engine initialized in ${totalTime} seconds`);
     }
@@ -100,7 +100,7 @@ export class PreviewEngine {
     private async buildRenderer(projectPath: string): Promise<void> {
         try {
             vscode.window.showInformationMessage('Building WPF renderer... This may take a minute.');
-            
+
             // Check if dotnet is available
             try {
                 await execAsync('dotnet --version', { timeout: 5000 });
@@ -163,7 +163,7 @@ export class PreviewEngine {
 
         try {
             const debugConsole = DebugConsole.getInstance();
-            
+
             this._rendererProcess = spawn(this._rendererPath, [], {
                 stdio: ['pipe', 'pipe', 'pipe'],
                 shell: false,
@@ -174,7 +174,7 @@ export class PreviewEngine {
                     PYTHONUNBUFFERED: '1' // Doesn't apply to .NET but shows intent
                 }
             });
-            
+
             // Force stdout to be unbuffered by setting it to line mode
             if (this._rendererProcess.stdout) {
                 this._rendererProcess.stdout.setEncoding('utf8');
@@ -231,7 +231,7 @@ export class PreviewEngine {
     public async renderFastLive(xaml: string): Promise<RenderResult> {
         const debugConsole = DebugConsole.getInstance();
         const perfMonitor = PerformanceMonitor.getInstance();
-        
+
         return await perfMonitor.measure('renderFastLive', async () => {
             try {
                 await this.ensureRendererRunning();
@@ -275,7 +275,7 @@ export class PreviewEngine {
                     debugConsole.debug(`Renderer stdout: ${dataStr.substring(0, 100)}...`);
                     outputBuffer += dataStr;
                     const lines = outputBuffer.split('\n');
-                    
+
                     // Check if we have a complete JSON response
                     for (let i = 0; i < lines.length - 1; i++) {
                         const line = lines[i].trim();
@@ -284,7 +284,7 @@ export class PreviewEngine {
                                 const response = JSON.parse(line);
                                 clearTimeout(timeout);
                                 this._rendererProcess?.stdout?.removeListener('data', dataHandler);
-                                
+
                                 if (response.type === 'error') {
                                     debugConsole.error('Renderer error:', new Error(response.error || 'Unknown render error'));
                                     resolve({
@@ -308,7 +308,7 @@ export class PreviewEngine {
                             }
                         }
                     }
-                    
+
                     outputBuffer = lines[lines.length - 1];
                 };
 
@@ -321,22 +321,22 @@ export class PreviewEngine {
                 this._rendererProcess.stderr?.on('data', errorHandler);
 
                 let rendererReady = false;
-                
+
                 // Listen for ready signal FIRST
                 const readyHandler = (data: Buffer) => {
                     const dataStr = data.toString();
                     debugConsole.debug(`Ready handler received: ${dataStr.substring(0, 100)}`);
-                    
+
                     if (dataStr.includes('"type":"ready"') || dataStr.includes('ready')) {
                         rendererReady = true;
                         debugConsole.info('Renderer is ready!');
                         this._rendererProcess?.stdout?.removeListener('data', readyHandler);
-                        
+
                         // Now attach the data handler for render responses
                         if (this._rendererProcess?.stdout) {
                             this._rendererProcess.stdout.on('data', dataHandler);
                         }
-                        
+
                         // Now send render command
                         const message = JSON.stringify({
                             type: 'render',
@@ -344,7 +344,7 @@ export class PreviewEngine {
                         }) + '\n';
 
                         debugConsole.debug(`Sending render command (${xaml.length} chars XAML)`);
-                        
+
                         if (!this._rendererProcess || !this._rendererProcess.stdin) {
                             debugConsole.error('Renderer process or stdin not available');
                             clearTimeout(timeout);
@@ -387,18 +387,18 @@ export class PreviewEngine {
 
                 // First listen for ready signal
                 this._rendererProcess.stdout?.on('data', readyHandler);
-                
+
                 // Fallback: if no ready signal after 3 seconds, try anyway
                 setTimeout(() => {
                     if (!rendererReady && this._rendererProcess) {
                         debugConsole.warn('No ready signal received after 3s, sending render command anyway');
                         this._rendererProcess.stdout?.removeListener('data', readyHandler);
-                        
+
                         // Switch to normal data handler
                         if (this._rendererProcess.stdout) {
                             this._rendererProcess.stdout.on('data', dataHandler);
                         }
-                        
+
                         // Send render command
                         const message = JSON.stringify({
                             type: 'render',
@@ -436,7 +436,7 @@ export class PreviewEngine {
             const dataHandler = (data: Buffer) => {
                 outputBuffer += data.toString();
                 const lines = outputBuffer.split('\n');
-                
+
                 for (let i = 0; i < lines.length - 1; i++) {
                     const line = lines[i].trim();
                     if (line.startsWith('{')) {
@@ -444,7 +444,7 @@ export class PreviewEngine {
                             const response = JSON.parse(line);
                             clearTimeout(timeout);
                             this._rendererProcess?.stdout?.removeListener('data', dataHandler);
-                            
+
                             if (response.type === 'error') {
                                 reject(new Error(response.error || 'Unknown layout error'));
                             } else if (response.type === 'layoutMap') {
@@ -455,7 +455,7 @@ export class PreviewEngine {
                         }
                     }
                 }
-                
+
                 outputBuffer = lines[lines.length - 1];
             };
 
@@ -498,7 +498,7 @@ export class PreviewEngine {
                 // Send exit command
                 const message = JSON.stringify({ type: 'exit' }) + '\n';
                 this._rendererProcess.stdin?.write(message);
-                
+
                 setTimeout(() => {
                     if (this._rendererProcess && !this._rendererProcess.killed) {
                         this._rendererProcess.kill();
@@ -539,6 +539,10 @@ export interface LayoutElement {
     margin?: string;
     width?: number;
     height?: number;
+    horizontalAlignment?: string;
+    verticalAlignment?: string;
+    visibility?: string;
+    opacity?: number;
     children?: LayoutElement[];
 }
 

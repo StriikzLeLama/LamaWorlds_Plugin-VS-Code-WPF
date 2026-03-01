@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="aiAssistant.css">
+</head>
+
+<body>
+    <div class="chat-container">
+        <div class="chat-header">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--cyan-neon)" stroke-width="2">
+                <path d="M12 2a10 10 0 1 0 10 10H12V2z"></path>
+                <path d="M12 2a10 10 0 0 1 10 10h-7.5l-3.5 3.5-3.5-3.5H2"></path>
+            </svg>
+            <h2>WPF AI Assistant</h2>
+        </div>
+
+        <div class="chat-messages" id="chatMessages">
+            <div class="message ai">
+                Hello! I'm your <b>LamaWorlds AI Assistant</b>. I can help you with XAML, MVVM, and styling your WPF
+                apps.
+                <div class="quick-actions">
+                    <button class="action-btn" onclick="askAI('Explain this XAML')">Explain current XAML</button>
+                    <button class="action-btn" onclick="askAI('Make this look like neon/glass')">Neon/Glass
+                        Style</button>
+                    <button class="action-btn" onclick="askAI('Fix my bindings')">Fix Bindings</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="chat-input-area">
+            <div class="input-wrapper">
+                <textarea id="chatInput" placeholder="Ask me anything about WPF..." rows="1"></textarea>
+                <button id="sendBtn" class="send-btn">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="22" y1="2" x2="11" y2="13"></line>
+                        <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
+    <script src="aiAssistant.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="dashboard.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <h1>Project Dashboard</h1>
+    <p class="subtitle">Overview of your LamaWorlds WPF Workspace</p>
+
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-label">Total XAML Files</div>
+            <div id="xamlCount" class="stat-value">--</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-label">C# Files</div>
+            <div id="csCount" class="stat-value">--</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-label">Project Health</div>
+            <div class="stat-value">98%</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-label">AI Savings</div>
+            <div class="stat-value">12h</div>
+        </div>
+    </div>
+
+    <div class="recent-files">
+        <div class="section-header">
+            <h2>Recent XAML Files</h2>
+        </div>
+        <div id="recentFileList" class="file-list">
+            <!-- Populated by JS -->
+            <div class="file-item">
+                <div class="file-icon">X</div>
+                <div class="file-info">
+                    <div class="file-name">MainWindow.xaml</div>
+                    <div class="file-path">/Views/MainWindow.xaml</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="dashboard.js"></script>
+</body>
+
+</html>

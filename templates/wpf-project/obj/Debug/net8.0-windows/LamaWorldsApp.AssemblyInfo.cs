@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("LamaWorldsApp")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+9486f7d7f8c458815907a195543a0e8c06f50e4c")]
 [assembly: System.Reflection.AssemblyProductAttribute("LamaWorldsApp")]
 [assembly: System.Reflection.AssemblyTitleAttribute("LamaWorldsApp")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

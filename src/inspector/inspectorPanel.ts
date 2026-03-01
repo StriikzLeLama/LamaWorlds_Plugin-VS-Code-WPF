@@ -1,6 +1,7 @@
 import * as vscode from 'vscode';
 import { TreeParser, TreeElement } from './treeParser';
 import { LayoutElement } from '../preview/previewEngine';
+import { PropertiesPanel } from '../panels/PropertiesPanel';
 
 /**
  * Visual Tree Inspector Panel
@@ -119,16 +120,20 @@ export class InspectorPanel {
             const element = this._treeParser.getElementById(elementId);
             if (element) {
                 this._selectedElement = element;
-                
+
                 // Notify preview panel to highlight (if available)
                 // The preview panel will handle highlighting when it receives layout updates
-                
+
                 // Update inspector view
                 this._panel.webview.postMessage({
                     command: 'elementSelected',
                     element: element,
                     properties: this._extractProperties(element)
                 });
+
+                // Update Properties Panel
+                PropertiesPanel.createOrShow(this._extensionUri);
+                PropertiesPanel.currentPanel?.selectElement(element);
             }
         }
     }
@@ -200,7 +205,7 @@ export class InspectorPanel {
 
     private _update() {
         const treeStructure = this._treeParser?.getTreeStructure() || null;
-        
+
         this._panel.webview.html = this._getWebviewContent(treeStructure);
     }
 
@@ -262,7 +267,7 @@ export class InspectorPanel {
         const indent = depth * 20;
         const hasChildren = node.children && node.children.length > 0;
         const displayName = node.name || node.type || 'Element';
-        
+
         let html = `
             <div class="tree-node" style="padding-left: ${indent}px;" data-element-id="${node.id}">
                 <span class="tree-toggle ${hasChildren ? '' : 'hidden'}" onclick="toggleNode(this)">▶</span>

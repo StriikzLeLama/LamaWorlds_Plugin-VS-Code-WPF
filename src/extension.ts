@@ -43,6 +43,9 @@ import { WpfToAvaloniaConverter } from './converters/wpfToAvalonia';
 import { WpfToMauiConverter } from './converters/wpfToMaui';
 import { WpfToWinUI3Converter } from './converters/wpfToWinUI';
 import { ThemeManagerPanel } from './panels/ThemeManagerPanel';
+import { PropertiesPanel } from './panels/PropertiesPanel';
+import { AIAssistantPanel } from './panels/AIAssistantPanel';
+import { DashboardPanel } from './panels/DashboardPanel';
 
 /**
  * Main extension entry point
@@ -52,15 +55,15 @@ export function activate(context: vscode.ExtensionContext) {
     // Initialize services FIRST
     const debugConsole = DebugConsole.getInstance();
     const performanceMonitor = PerformanceMonitor.getInstance();
-    
+
     const initTime = debugConsole.time('Extension Activation', 'Initialization');
-    
+
     debugConsole.info('LamaWorlds WPF Studio extension activation started', 'Initialization', {
         extensionId: context.extension.id,
         extensionPath: context.extensionPath,
         workspaceFolders: vscode.workspace.workspaceFolders?.length || 0
     });
-    
+
     try {
         // Initialize command registry
         CommandRegistry.initialize(context);
@@ -125,6 +128,18 @@ export function activate(context: vscode.ExtensionContext) {
             showCollapseAll: true
         });
         context.subscriptions.push(marketplaceTreeView);
+
+        // Sidebar view for Properties
+        context.subscriptions.push(
+            vscode.commands.registerCommand('lamaworlds.openProperties', () => {
+                try {
+                    PropertiesPanel.createOrShow(context.extensionUri);
+                } catch (error: any) {
+                    debugConsole.error('Error opening Properties Panel', error, 'PropertiesPanel');
+                    vscode.window.showErrorMessage(`Failed to open Properties Panel: ${error?.message || error}`);
+                }
+            })
+        );
     } catch (error: any) {
         debugConsole.error('Error creating Tree Views', error, 'TreeViews', {
             workspaceFolders: vscode.workspace.workspaceFolders?.length || 0
@@ -557,6 +572,30 @@ export function activate(context: vscode.ExtensionContext) {
                 console.error('Error opening Theme Manager:', error);
                 vscode.window.showErrorMessage(`Failed to open Theme Manager: ${error?.message || error}`);
             }
+        }),
+        vscode.commands.registerCommand('lamaworlds.openPropertiesPanel', () => {
+            try {
+                PropertiesPanel.createOrShow(context.extensionUri);
+            } catch (error: any) {
+                console.error('Error opening Properties Panel:', error);
+                vscode.window.showErrorMessage(`Failed to open Properties Panel: ${error?.message || error}`);
+            }
+        }),
+        vscode.commands.registerCommand('lamaworlds.openAiAssistant', () => {
+            try {
+                AIAssistantPanel.createOrShow(context.extensionUri);
+            } catch (error: any) {
+                console.error('Error opening AI Assistant:', error);
+                vscode.window.showErrorMessage(`Failed to open AI Assistant: ${error?.message || error}`);
+            }
+        }),
+        vscode.commands.registerCommand('lamaworlds.openDashboard', () => {
+            try {
+                DashboardPanel.createOrShow(context.extensionUri);
+            } catch (error: any) {
+                console.error('Error opening Dashboard:', error);
+                vscode.window.showErrorMessage(`Failed to open Dashboard: ${error?.message || error}`);
+            }
         })
     );
 
@@ -668,4 +707,7 @@ export function deactivate() {
     AccessibilityCheckerPanel.dispose();
     NavigationGraphPanel.dispose();
     ThemeManagerPanel.dispose();
+    PropertiesPanel.dispose();
+    AIAssistantPanel.dispose();
+    DashboardPanel.dispose();
 }

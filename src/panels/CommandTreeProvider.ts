@@ -7,7 +7,7 @@ export class CommandTreeProvider implements vscode.TreeDataProvider<CommandItem>
     private _onDidChangeTreeData: vscode.EventEmitter<CommandItem | undefined | null | void> = new vscode.EventEmitter<CommandItem | undefined | null | void>();
     readonly onDidChangeTreeData: vscode.Event<CommandItem | undefined | null | void> = this._onDidChangeTreeData.event;
 
-    constructor(private context: vscode.ExtensionContext) {}
+    constructor(private context: vscode.ExtensionContext) { }
 
     refresh(): void {
         this._onDidChangeTreeData.fire();
@@ -54,11 +54,13 @@ export class CommandTreeProvider implements vscode.TreeDataProvider<CommandItem>
             'preview': [
                 { id: 'lamaworlds.openXamlPreview', label: 'Open XAML Preview', icon: '👁️' },
                 { id: 'lamaworlds.openVisualTreeInspector', label: 'Visual Tree Inspector', icon: '🌳' },
+                { id: 'lamaworlds.openPropertiesPanel', label: 'Properties Inspector', icon: '🔧' },
                 { id: 'lamaworlds.openToolbox', label: 'Open Toolbox', icon: '🧰' },
                 { id: 'lamaworlds.openResourceExplorer', label: 'Resource Explorer', icon: '🎨' },
                 { id: 'lamaworlds.openDebugInspector', label: 'Debug Inspector', icon: '🔍' }
             ],
             'ai': [
+                { id: 'lamaworlds.openAiAssistant', label: 'Open AI Assistant', icon: '🤖' },
                 { id: 'lamaworlds.aiGenerateUI', label: 'AI Generate UI', icon: '✨' },
                 { id: 'lamaworlds.aiOptimizeLayout', label: 'AI Optimize Layout', icon: '💡' },
                 { id: 'lamaworlds.aiAutoFix', label: 'AI Auto-Fix XAML', icon: '🔧' },
@@ -89,7 +91,7 @@ export class CommandTreeProvider implements vscode.TreeDataProvider<CommandItem>
         };
 
         const categoryCommands = commands[category] || [];
-        return categoryCommands.map(cmd => 
+        return categoryCommands.map(cmd =>
             new CommandItem(cmd.label, 'command', cmd.icon, cmd.id, category)
         );
     }
